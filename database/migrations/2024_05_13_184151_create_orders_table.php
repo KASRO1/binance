@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('currency_from');
             $table->string('currency_to');
             $table->string('limit');
-            $table->string('time');
             $table->string('commission');
             $table->boolean('bestPrice')->dafault(false);
             $table->boolean('AutoMode')->dafault(false);

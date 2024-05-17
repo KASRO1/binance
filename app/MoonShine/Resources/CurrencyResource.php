@@ -34,7 +34,7 @@ class CurrencyResource extends ModelResource
     {
         return [
             Block::make([
-                Text::make('Короткое название', 'symbol')->sortable()->disabled(),
+                Text::make('Короткое название', 'symbol')->sortable(),
                 Text::make('Полное название', 'name')->sortable()->hideOnIndex(),
                 Text::make('Курс', 'course')->sortable(),
                 Select::make('Тип', 'type')->options(['fiat' => 'fiat', 'crypto' => 'crypto'])->sortable(),

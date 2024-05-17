@@ -20,7 +20,6 @@ class Order extends Model
         'currency_from',
         'currency_to',
         'limit',
-        'time',
         'commission',
         'bestPrice',
         'AutoMode'

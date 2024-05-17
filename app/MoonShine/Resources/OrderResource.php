@@ -41,6 +41,7 @@ class OrderResource extends ModelResource
                 Text::make('Доступно $', 'available')->sortable(),
                 Text::make('Доступные лимиты', 'limit')->sortable(),
                 Image::make('QR', 'qr_code')->sortable(),
+                Image::make('Среднее ', 'time')->sortable(),
                 Text::make('Отзывов', 'feedback')->sortable(),
                 Text::make('Платежные реквизиты', 'сredentials')->sortable(),
                 Select::make('Валюта от', 'currency_from')->options((new GetCurrencies())->run('options'))->sortable(),
