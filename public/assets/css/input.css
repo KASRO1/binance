@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-size: 16px;
+    font-family: 'BinancePlex', 'Arial', sans-serif !important;
+    font-weight: 500;
+    background: #181E25;  
+    color: white;
+
+}
+
+.__btn{
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    height: 48px;
+    line-height: 24px;
+    color: black;
+    min-height: 48px;
+    min-width: 80px;
+    transition: all 0.3s ease;
+}
+.__btn_ligth:hover{
+    background: #29313D;
+}
+.__btn_ligth.active{
+    background: #29313D;
+}
+.__btn_ligth{
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    padding: 7px 15px;
+    line-height: 24px;
+    color: #B7BDC6;
+}
+
+.__input{
+    box-sizing: border-box;
+    margin: 0;
+    border: 1px solid transparent;
+    border-color: #474D57;
+    border-radius: 4px;
+    background-color: transparent;
+   
+    display: flex;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+  
+    width: 100%;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    height: 50px !important;
+    padding: 13px 10px !important;
+    color: #EAECEF;
+    caret-color: #FCD535;
+    transition-duration: 0.3s;
+    transition-property: all;
+    transition-timing-function: ease-in-out;
+    align-items: center;
+    &:focus {
+        border-color: #F0B90B;
+        outline: transparent;
+    } 
+     &:focus-visible {
+        border-color: #F0B90B;
+        outline: transparent;
+    }
+    &:hover {
+        border-color: #F0B90B;
+        outline: transparent;
+    }
+    &:active {
+        border-color: #F0B90B;
+        outline: transparent;
+    }
+
+
+
+}
+
+.modalTrade.active{
+    transform: translateZ(0);
+    
+
+}
+.modalTrade{
+    border-radius: 16px 16px 0 0;
+    max-height: calc(100% - 80px);
+    background-color: white;
+    max-width: 100vw;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+    transition-duration: 250ms;
+    transition-property: transform;
+    transition-timing-function: ease-in;
+    transform: translate3d(0, 100%, 0);
+}
+.modalProfile{
+    z-index: 1000;
+    opacity: 1;
+    visibility: visible;
+
+}
+
+.modalProfileContent.active{
+    transform: translateZ(0);
+    display: block;
+}
+.modalProfileContent{
+    background-color: white;
+    transform: translate3d(100%, 0, 0);
+    display: none;
+    color: black !important;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    max-height: 100vh;
+    max-width: 100vw;
+    right: 0;
+    top: 0;
+    transition-duration: 250ms;
+    transition-property: transform;
+    transition-timing-function: ease-in;
+}
+@keyframes jump-scaleY {
+    0% {
+        transform: translateY(0) scaleY(1);
+    }
+    7.5% {
+        transform: translateY(-120%) scaleY(2);
+    }
+    15%, 35% {
+        transform: translateY(-120%) scaleY(.5);
+    }
+    43.5% {
+        transform: translateY(0) scaleY(2);
+    }
+    52.5%, 72.5% {
+        transform: translateY(120%) scaleY(.5);
+    }
+    80%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    
+}
+.bn-spinner__nezha {
+    grid-gap: 4px;
+    align-items: center;
+    display: inline-flex;
+    gap: 4px;
+    justify-content: center;
+    padding: 8px;
+}
+.bn-button .bn-spinner__nezha {
+    grid-gap: 3px;
+    gap: 3px;
+    height: 24px;
+    padding: 0 8px;
+}
+.bn-button.data-size-large .bn-spinner__nezha {
+    height: 26px;
+}
+.bn-button .bn-spinner__nezha>.nezha-line {
+    background-color: #202630;
+    height: 5px;
+    width: 3px;
+}
+.__link_ligth{
+    text-decoration-line: underline;
+        text-decoration-line: underline;
+}
+.bn-spinner__nezha>.nezha-line {
+    -webkit-animation: jump-scaleY 1.5s linear infinite;
+    animation: jump-scaleY 1.5s linear infinite;
+    background-color: #202630;
+    height: 8px;
+    transform-origin: top;
+    width: 4px;
+}
