@@ -20,12 +20,12 @@
             <p class="text-sm font-medium text-gray ">
                 {{__('register.label_password')}}
             </p>
-            <input id="password_input" name="password" type="text" class="__input">
+            <input id="password_input" name="password" type="password" class="__input">
 
             <p class="text-sm font-medium text-gray">
                 {{__('register.label_ConfirmPassword')}}
             </p>
-            <input id="password_confirm" type="text" class="__input">
+            <input id="password_confirm" type="password" class="__input">
             <p id="password_error" class="text-sm text-red"></p>
         </div>
         <div id="option_account" class="flex hidden   flex-col gap-3">
@@ -47,12 +47,12 @@
         </div>
         <button type="button" id="nextStep" class="__btn bg-yelow">{{__('register.btn_next')}}</button>
 
+
         <div class="flex gap-1">
             <p class="text-sm font-medium text-gray">
-                {{__('register.dont_have_account')}}
+                {{__('login.already_have_account')}}
             </p>
-            <a href="register.html"
-               class="text-sm text-yelow2 hover:text-yelow transition-all">{{__('register.btn_register')}}</a>
+            <a href="{{route('login')}}" class="text-sm text-yelow2 hover:text-yelow transition-all">{{__('login.btn_login')}}</a>
         </div>
     </form>
 @endsection

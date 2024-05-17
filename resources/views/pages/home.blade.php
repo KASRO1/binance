@@ -31,12 +31,12 @@
             </div>
         </div>
         <div class="flex flex-col gap-3">
-            <button class="__btn bg-yelow">
+            <a href="{{route('login')}}" class="__btn flex items-center justify-center bg-yelow">
                 {{__('home.btn_login')}}
-            </button>
-            <button class="__btn bg-yelow">
+            </a>
+            <a href="{{route('register')}}"  class="__btn flex items-center justify-center bg-yelow">
                 {{__('home.btn_register')}}
-            </button>
+            </a>
 
         </div>
 

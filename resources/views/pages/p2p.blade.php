@@ -10,13 +10,14 @@
                 {{__('p2p.title')}}
             </h1>
             @if(\Illuminate\Support\Facades\Auth::check())
-            <div class="flex flex-col gap-2">
-                <p class="text-sm font-medium text-gray">
-                    {{__('p2p.your_currency')}}
-                </p>
+                <div class="flex flex-col gap-2">
+                    <p class="text-sm font-medium text-gray">
+                        {{__('p2p.your_currency')}}
+                    </p>
 
                     <div class="itc-select disable" id="select-1">
-                        <button type="button" class="itc-select__toggle" name="car" value="{{Auth::user()->main_currency}}" data-select="toggle"
+                        <button type="button" class="itc-select__toggle" name="car"
+                                value="{{Auth::user()->main_currency}}" data-select="toggle"
                                 data-index="1">{{Auth::user()->main_currency}}</button>
                         <div class="itc-select__dropdown">
                             <ul class="itc-select__options">
@@ -27,7 +28,7 @@
                         </div>
                     </div>
 
-            </div>
+                </div>
             @endif
         </div>
         <div class="flex flex-col gap-3">
@@ -35,14 +36,16 @@
 
                 <form id="p2pForm" method="get" class="flex gap-2 items-center">
                     <div class="itc-select" id="select-2">
-                        <button type="button" class="itc-select__toggle  h-10" name="currency_from" value="{{$currencies[0]['symbol']}}" data-select="toggle"
-                                data-index="{{$currencies[0]['id']}}">
-                            {{$currencies[0]['symbol']}}
+                        <button type="button" class="itc-select__toggle  h-10" name="currency_from"
+                                value="{{$cur_from['symbol']}}" data-select="toggle"
+                                data-index="{{$cur_from['id']}}">
+                            {{$cur_from['symbol']}}
                         </button>
                         <div class="itc-select__dropdown">
                             <ul class="itc-select__options">
-                                @foreach($currencies as $currency)
-                                    <li class="itc-select__option" data-select="option" data-value="{{$currency['symbol']}}" data-index="{{$currency['id']}}">
+                                @foreach($currencies_from as $currency)
+                                    <li class="itc-select__option" data-select="option"
+                                        data-value="{{$currency['symbol']}}" data-index="{{$currency['id']}}">
                                         {{$currency['symbol']}}
                                     </li>
                                 @endforeach
@@ -51,14 +54,16 @@
                         </div>
                     </div>
                     <div class="itc-select" id="select-3">
-                        <button type="button" class="itc-select__toggle  h-10" name="currency_to" value="{{$currencies[1]['symbol']}}" data-select="toggle"
-                                data-index="{{$currencies[1]['id']}}">
-                            {{$currencies[1]['symbol']}}
+                        <button type="button" class="itc-select__toggle  h-10" name="currency_to"
+                                value="{{$cur_to['symbol']}}" data-select="toggle"
+                                data-index="{{$cur_to['id']}}">
+                            {{$cur_to['symbol']}}
                         </button>
                         <div class="itc-select__dropdown">
                             <ul class="itc-select__options">
                                 @foreach($currencies as $currency)
-                                    <li class="itc-select__option" data-select="option" data-value="{{$currency['symbol']}}" data-index="{{$currency['id']}}">
+                                    <li class="itc-select__option" data-select="option"
+                                        data-value="{{$currency['symbol']}}" data-index="{{$currency['id']}}">
                                         {{$currency['symbol']}}
                                     </li>
                                 @endforeach
@@ -66,17 +71,56 @@
                             </ul>
                         </div>
                     </div>
-                    <button type="submit" style="height: 80%" class="px-4 rounded flex items-center  bg-yelow text-yelow2 ">
-                        <svg width="16px" height="16px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="black" stroke="black"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>arrow-right-circle</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-310.000000, -1089.000000)" fill="#000000"> <path d="M332.535,1105.88 L326.879,1111.54 C326.488,1111.93 325.855,1111.93 325.465,1111.54 C325.074,1111.15 325.074,1110.51 325.465,1110.12 L329.586,1106 L319,1106 C318.447,1106 318,1105.55 318,1105 C318,1104.45 318.447,1104 319,1104 L329.586,1104 L325.465,1099.88 C325.074,1099.49 325.074,1098.86 325.465,1098.46 C325.855,1098.07 326.488,1098.07 326.879,1098.46 L332.535,1104.12 C332.775,1104.36 332.85,1104.69 332.795,1105 C332.85,1105.31 332.775,1105.64 332.535,1105.88 L332.535,1105.88 Z M326,1089 C317.163,1089 310,1096.16 310,1105 C310,1113.84 317.163,1121 326,1121 C334.837,1121 342,1113.84 342,1105 C342,1096.16 334.837,1089 326,1089 L326,1089 Z" id="arrow-right-circle" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg>
+                    <button type="submit" style="height: 80%"
+                            class="px-4 rounded flex items-center  bg-yelow text-yelow2 ">
+                        <svg width="16px" height="16px" viewBox="0 0 32 32" version="1.1"
+                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                             xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="black" stroke="black">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier"><title>arrow-right-circle</title>
+                                <desc>Created with Sketch Beta.</desc>
+                                <defs></defs>
+                                <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"
+                                   sketch:type="MSPage">
+                                    <g id="Icon-Set-Filled" sketch:type="MSLayerGroup"
+                                       transform="translate(-310.000000, -1089.000000)" fill="#000000">
+                                        <path
+                                            d="M332.535,1105.88 L326.879,1111.54 C326.488,1111.93 325.855,1111.93 325.465,1111.54 C325.074,1111.15 325.074,1110.51 325.465,1110.12 L329.586,1106 L319,1106 C318.447,1106 318,1105.55 318,1105 C318,1104.45 318.447,1104 319,1104 L329.586,1104 L325.465,1099.88 C325.074,1099.49 325.074,1098.86 325.465,1098.46 C325.855,1098.07 326.488,1098.07 326.879,1098.46 L332.535,1104.12 C332.775,1104.36 332.85,1104.69 332.795,1105 C332.85,1105.31 332.775,1105.64 332.535,1105.88 L332.535,1105.88 Z M326,1089 C317.163,1089 310,1096.16 310,1105 C310,1113.84 317.163,1121 326,1121 C334.837,1121 342,1113.84 342,1105 C342,1096.16 334.837,1089 326,1089 L326,1089 Z"
+                                            id="arrow-right-circle" sketch:type="MSShapeGroup"></path>
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
                     </button>
                 </form>
             </div>
-            @if(count($orders) != 0 )
+            @if(Auth::check() && Auth::user()->limit_deals == 0)
+                <div class="flex flex-col pt-7 gap-3">
+                    <div class="h-24 items-center justify-center flex text-red">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5.326 13.909l-1.429 1.417L12 13.429l-3.897 3.897-1.429-1.417 3.909-3.898-3.909-3.908 1.429-1.417L12 10.583l3.897-3.897 1.429 1.417-3.897 3.908 3.897 3.898z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </div>
+
+                    <p class="text-white text-xl text-center">
+                        You have exhausted your cryptocurrency transaction limit
+                    </p>
+                    <p class="text-gray2 text-sm text-center">
+                        To continue changing currencies, add X(user currencies) to your account
+                    </p>
+                    <button class="__btn bg-yelow">Exchange</button>
+                </div>
+
+            @elseif(count($orders) != 0 )
                 @foreach($orders as $order)
                     <div class="flex border-b border-gray4 py-3 flex-col gap-1">
                         <div class="flex items-center gap-2">
-                            <div class="flex items-center justify-center relative rounded-md text-center flex-none bg-gray4 text-white"
-                                 style="width: 24px; height: 24px; line-height: 24px;">
+                            <div
+                                class="flex items-center justify-center relative rounded-md text-center flex-none bg-gray4 text-white"
+                                style="width: 24px; height: 24px; line-height: 24px;">
                                 {{$order['username'][0]}}
                                 <div class="border border-gray4 absolute right-0 bottom-0 rounded-full bg-green-300"
                                      style="width: 10px; height: 10px; max-height: 14px; max-width: 14px;"></div>
@@ -91,7 +135,7 @@
                         </div>
                         <div class="flex items-center font-normal text-xs text-gray gap-2">
                             {{$order['orders']}} {{__('p2p.orders')}}
-                            <hr class="border-none bg-gray flex w-px h-min-[10px] mx-2 h-[10px]" />
+                            <hr class="border-none bg-gray flex w-px h-min-[10px] mx-2 h-[10px]"/>
                             {{$order['completion']}} {{__('p2p.completion')}}
                         </div>
                         <div class="font-semibold">
@@ -129,11 +173,12 @@
 
                             @endif
                             @if(Auth::check())
-                                    <div>
-                                        <button onclick="showModalExchange(this, 100, {{$order['id']}})"
-                                                class="bg-yelow text-black text-xs rounded-md px-4 py-[2px]">Exchange</button>
-                                    </div>
-                                @endif
+                                <div>
+                                    <button onclick="showModalExchange(this, 100, {{$order['id']}})"
+                                            class="bg-yelow text-black text-xs rounded-md px-4 py-[2px]">Exchange
+                                    </button>
+                                </div>
+                            @endif
 
                         </div>
                     </div>
@@ -157,6 +202,7 @@
                 </div>
 
             @endif
+
         </div>
         <div class="flex px-4 py-4 border border-gray4 rounded-3xl flex-col gap-6">
             <div class="flex flex-col gap-[15px]">
@@ -172,12 +218,12 @@
     <section id="modalTrade" class="modalTrade hidden pb-10 pt-5 px-5">
         <form class="flex flex-1 h-full flex-col gap-5">
             <input class="hidden" value="" id="order_id">
-                <input class="hidden" value="{{$open_order ? $open_order->order_id : null}}" id="transaction_id">
+            <input class="hidden" value="{{$open_order ? $open_order->id : null}}" id="transaction_id">
             <input class="hidden" value="" id="status">
-            <input class="hidden" value="{{$balance['amount']}}" id="balance">
+            <input class="hidden" value="{{$balance ? $balance['amount'] : null}}" id="balance">
             <div class="flex flex-col">
                 <div class="text-black pb-5 flex w-full justify-between">
-                    <h2 >{{__('p2p.exchange')}} <span id="currency">USDT</span></h2>
+                    <h2>{{__('p2p.exchange')}} <span id="currency">USDT</span></h2>
                     <div onclick="closeModalExchange()" class="close cursor-pointer h-5 w-5">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-11ppfta">
                             <path
@@ -189,20 +235,13 @@
                 <div class="flex font-light gap-1 items-center text-sm text-gray">
                     {{__('p2p.price')}}
                     <span class="text-green font-medium" id="price">57.54 PHP</span>
-                    <div class="h-4 w-4">
-                        <svg class="bn-svg w-[16px] h-[16px] text-iconNormal cursor-pointer" role="button"
-                             aria-label="refresh button" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                  d="M19.997 12.21a8.161 8.161 0 000-.42v.42zm-4.463 3.327l-2.608-2.608h7.07V20l-2.341-2.342A8.003 8.003 0 014.252 14h3.164a5.001 5.001 0 008.118 1.537zM19.747 10A8.003 8.003 0 006.343 6.343L4.001 4v7.071h7.07L8.466 8.464A5.001 5.001 0 0116.585 10h3.162zM4 12L4 11.845v.31A8.126 8.126 0 014 12z"
-                                  fill="currentColor"></path>
-                        </svg>
-                    </div>
                 </div>
             </div>
             <div id="infoExchange" class="flex flex-col gap-3">
                 <div class="flex font-normal text-sm items-center text-black gap-2">
-                    <div class="flex items-center justify-center relative rounded-md text-center flex-none bg-gray4 text-white"
-                         style="width: 24px; height: 24px; line-height: 24px;">
+                    <div
+                        class="flex items-center justify-center relative rounded-md text-center flex-none bg-gray4 text-white"
+                        style="width: 24px; height: 24px; line-height: 24px;">
                         <span id="avatar">财</span>
                         <div class="border border-gray4 absolute right-0 bottom-0 rounded-full bg-green-300"
                              style="width: 10px; height: 10px; max-height: 14px; max-width: 14px;"></div>
@@ -252,30 +291,38 @@
                 <p class="font-medium text-black">
                     {{__("p2p.payment_details")}}
                 </p>
-{{--                <input name="password" placeholder="Your creditals" type="text" class="__input text-black mb-3" />--}}
+                {{--                <input name="password" placeholder="Your creditals" type="text" class="__input text-black mb-3" />--}}
                 <div class="flex justify-between items-center">
                     <p class="font-light text-xs text-gray">
                         {{__('p2p.balance')}} <span class="font-medium">
-                            {{$balance['amount']}} {{$cur_from['symbol']}}
+                            {{$balance ? $balance['amount'] : 0}} {{$cur_from['symbol']}}
                         </span>
                     </p>
                     <div class="flex gap-2">
                         <button onclick="selectProcentBalance(10)" type="button"
-                            class="bg-gray3 transition-all hover:bg-yelow hover:text-black text-white text-xs rounded-md px-4 py-[2px]">10%</button>
+                                class="bg-gray3 transition-all hover:bg-yelow hover:text-black text-white text-xs rounded-md px-4 py-[2px]">
+                            10%
+                        </button>
                         <button onclick="selectProcentBalance(50)" type="button"
-                            class="bg-gray3 transition-all hover:bg-yelow hover:text-black text-white text-xs rounded-md px-4 py-[2px]">50%</button>
+                                class="bg-gray3 transition-all hover:bg-yelow hover:text-black text-white text-xs rounded-md px-4 py-[2px]">
+                            50%
+                        </button>
                         <button onclick="selectProcentBalance(100)" type="button"
-                            class="bg-gray3 transition-all hover:bg-yelow hover:text-black text-white text-xs rounded-md px-4 py-[2px]">MAX</button>
+                                class="bg-gray3 transition-all hover:bg-yelow hover:text-black text-white text-xs rounded-md px-4 py-[2px]">
+                            MAX
+                        </button>
                     </div>
                 </div>
-                <input name="amount" placeholder="Amount" type="text" class="__input text-black mb-3" />
+                <input name="amount" placeholder="Amount" type="text" class="__input text-black mb-3"/>
                 <button type="button" class="__btn bg-yelow nextStep">{{__('p2p.exchange')}}</button>
-                <button type="button" onclick="closeModalExchange()" class="__btn bg-red text-white">{{__('p2p.close')}}</button>
+                <button type="button" onclick="closeModalExchange()"
+                        class="__btn bg-red text-white">{{__('p2p.close')}}</button>
             </div>
             <div id="paymentExchange" class="hidden flex flex-col gap-3">
                 <div class="flex font-normal text-sm items-center text-black gap-2">
-                    <div class="flex items-center justify-center relative rounded-md text-center flex-none bg-gray4 text-white"
-                         style="width: 24px; height: 24px; line-height: 24px;">
+                    <div
+                        class="flex items-center justify-center relative rounded-md text-center flex-none bg-gray4 text-white"
+                        style="width: 24px; height: 24px; line-height: 24px;">
                         <span id="avatar">财</span>
                         <div class="border border-gray4 absolute right-0 bottom-0 rounded-full bg-green-300"
                              style="width: 10px; height: 10px; max-height: 14px; max-width: 14px;"></div>
@@ -326,19 +373,21 @@
                     {{__("p2p.payment_details")}}
                 </p>
                 <div class="h-48 m-auto">
-                    <img id="qr_code" class="h-48" src="./assets/img/qr.png" alt="" />
+                    <img id="qr_code" class="h-48" src="./assets/img/qr.png" alt=""/>
                 </div>
                 <div class="flex flex-col gap-1">
                     <p class="text-sm font-normal text-gray">
                         {{__('p2p.credentials')}}
                     </p>
-                    <input id="credentials" disabled name="password" value="92984829284" type="text" class="__input text-black mb-3" />
+                    <input id="credentials" disabled name="password" value="92984829284" type="text"
+                           class="__input text-black mb-3"/>
                 </div>
                 <div class="flex flex-col gap-1">
                     <p class="text-sm font-normal text-gray">
                         {{__('p2p.commission')}}
                     </p>
-                    <input id="commission" disabled name="password" value="4102$" type="text" class="__input text-black mb-3" />
+                    <input id="commission" disabled name="password" value="4102$" type="text"
+                           class="__input text-black mb-3"/>
                 </div>
                 <p class="text-xs font-normal text-gray">
                     {{__('p2p.description1')}}
@@ -360,7 +409,8 @@
                 </div>
 
                 <button type="button" class="__btn bg-yelow nextStep">{{__('p2p.i_paid')}}</button>
-                <button type="button" onclick="closeModalExchange()" class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
+                <button type="button" onclick="closeModalExchange()"
+                        class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
             </div>
             <div id="documentUpload" class="flex hidden flex-col gap-3">
                 <div class="flex justify-center items-center h-96">
@@ -380,9 +430,10 @@
                 <label class="__btn flex justify-center items-center bg-green text-white" for="receipt">
                     {{__('p2p.select_image')}}
                 </label>
-                <input name="document" id="receipt" type="file" class="__input hidden text-black mb-3" />
+                <input name="document" id="receipt" type="file" class="__input hidden text-black mb-3"/>
                 <button type="button" class="__btn bg-yelow nextStep">{{__('p2p.next')}}</button>
-                <button type="button" onclick="closeModalExchange()" class="__btn bg-gray2/30 text-black">{{__('p2p.back')}}</button>
+                <button type="button" onclick="closeModalExchange()"
+                        class="__btn bg-gray2/30 text-black">{{__('p2p.back')}}</button>
             </div>
             <div id="loadingExchange" class="hidden flex justify-between h-full flex-col">
                 <div class="flex flex-1 h-full justify-center flex-col gap-3">
@@ -420,10 +471,10 @@
                         {{__('p2p.status_success')}}
                     </p>
                 </div>
-                <button type="button" onclick="closeModalExchange()" class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
+                {{--                <button type="button" onclick="closeModalExchange()" class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>--}}
             </div>
             <div id="successExchange" class="hidden flex justify-between h-full flex-col">
-                <div class="hidden flex flex-1 h-full justify-center flex-col gap-3">
+                <div class=" flex flex-1 h-full justify-center flex-col gap-3">
                     <div class="h-24 items-center justify-center flex text-green">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-24">
                             <path
@@ -435,11 +486,12 @@
                         {{__('p2p.status_success')}}
                     </p>
                 </div>
-                <button type="button" onclick="closeModalExchange()" class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
+                <button type="button" onclick="closeModalExchange()"
+                        class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
             </div>
             <div id="errorExchange" class="hidden flex justify-between h-full flex-col">
 
-                <div class="hidden flex flex-1 h-full justify-center flex-col gap-3">
+                <div class=" flex flex-1 h-full justify-center flex-col gap-3">
                     <div class="h-24 items-center justify-center flex text-green">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-24">
                             <path
@@ -451,7 +503,8 @@
                         {{__('p2p.status_success')}}
                     </p>
                 </div>
-                <button type="button" onclick="closeModalExchange()" class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
+                <button type="button" onclick="closeModalExchange()"
+                        class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
             </div>
         </form>
     </section>
@@ -463,8 +516,9 @@
     <script>
         const select2 = new ItcCustomSelect(document.getElementById('select-2'));
         const select3 = new ItcCustomSelect(document.getElementById('select-3'));
-        function updateData(order_id){
-            axios.get('/order/get/'+order_id)
+
+        function updateData(order_id) {
+            axios.get('/order/get/' + order_id)
                 .then(function (response) {
                     console.log(response.data);
                     let order = response.data;
@@ -483,7 +537,7 @@
 
                     document.querySelectorAll('#price').forEach(
                         (el) => {
-                            el.innerHTML = order.price + ' ' + order.currency_name;
+                            el.innerHTML = order.price;
                         }
                     );
                     document.querySelectorAll('#username').forEach(
@@ -493,7 +547,7 @@
                     );
                     document.querySelectorAll('#avatar').forEach(
                         (el) => {
-                            el.innerHTML = order.avatar;
+                            el.innerHTML = order.username[0]
                         }
                     )
                     document.querySelectorAll('#orders').forEach(
@@ -503,7 +557,7 @@
                     );
                     document.querySelectorAll('#execution_method').forEach(
                         (el) => {
-                            el.innerHTML = order.execution_method;
+                            el.innerHTML = order.AutoMode ? 'Auto mode' : 'Manual mode';
                         }
                     );
                     document.querySelectorAll('#available').forEach(
@@ -530,16 +584,21 @@
 
 
         }
+
         let step = 1;
 
         const nextStep = document.querySelectorAll('.nextStep');
+
         function hiddenAllStep() {
             document.getElementById('infoExchange').classList.add('hidden');
             document.getElementById('paymentExchange').classList.add('hidden');
             document.getElementById('documentUpload').classList.add('hidden');
             document.getElementById('loadingExchange').classList.add('hidden');
+            document.getElementById('successExchange').classList.add('hidden');
+            document.getElementById('errorExchange').classList.add('hidden');
         }
-        function createTransaction(step){
+
+        function createTransaction(step) {
             axios.post('/transaction/create', {
                 order_id: document.getElementById('order_id').value,
                 amount: document.getElementsByName('amount')[0].value,
@@ -555,10 +614,12 @@
                     console.log(error);
                 });
         }
-        function changeStatusTransaction(step){
-            axios.post('/transaction/changeStatus', {
+
+        function changeStatusTransaction(step) {
+            axios.post('{{route('transaction.change')}}', {
                 order_id: document.getElementById('order_id').value,
-                status: document.getElementById('status').value,
+                transaction_id: document.getElementById('transaction_id').value,
+                status: step,
             })
                 .then(function (response) {
                     console.log(response.data);
@@ -568,28 +629,25 @@
                     console.log(error);
                 });
         }
-        function showStep(step){
+
+        function showStep(step) {
             hiddenAllStep();
             if (step == 1) {
                 document.getElementById('infoExchange').classList.remove('hidden');
-            }
-            else if (step == 2) {
+            } else if (step == 2) {
                 document.getElementById('paymentExchange').classList.remove('hidden');
-            }
-            else if (step == 3) {
+            } else if (step == 3) {
                 document.getElementById('documentUpload').classList.remove('hidden');
-            }
-            else if (step == 4) {
+            } else if (step == 4) {
                 document.getElementById('loadingExchange').classList.remove('hidden');
-            }
-            else if (step == 5) {
+            } else if (step == 5) {
                 document.getElementById('successExchange').classList.remove('hidden');
-            }
-            else if (step == 6) {
+            } else if (step == 6) {
                 document.getElementById('errorExchange').classList.remove('hidden');
             }
         }
-        function confirmDeals(){
+
+        function confirmDeals() {
             let order_id = document.getElementById('order_id').value;
             let status = document.getElementById('status').value;
             let amount = document.getElementsByName('amount')[0].value;
@@ -607,6 +665,7 @@
                     showStep(6);
                 });
         }
+
         nextStep.forEach((el) => {
             el.addEventListener('click', () => {
                 step++;
@@ -616,12 +675,20 @@
                 el.innerHTML = `<div class="bn-spinner__nezha"><div class="nezha-line" style="animation-delay: 50ms;"></div><div class="nezha-line" style="animation-delay: 100ms;"></div><div class="nezha-line" style="animation-delay: 150ms;"></div><div class="nezha-line" style="animation-delay: 200ms;"></div></div>`;
                 setTimeout(() => {
                     @if($type == 'crypto')
-                        if (step == 2) {
-                            createTransaction(4);
+                    if (step == 2) {
+                        createTransaction(4);
+                        setTimeout(() => {
+                            changeStatusTransaction(5);
+                        }, 5000)
 
-                        }
+                    }
+                    @elseif($type == 'fiat')
+                    if (step == 2) {
+                        createTransaction(2);
+                    }
+
                     @endif
-                    el.innerHTML = `Next`;
+                        el.innerHTML = `Next`;
                 }, 1000);
 
             });
@@ -634,21 +701,25 @@
         });
 
 
-        function selectProcentBalance(procent){
+        function selectProcentBalance(procent) {
             let balance = document.getElementById('balance').value;
             let amount = balance * procent / 100;
             document.getElementsByName('amount')[0].value = amount;
         }
+
         @if(Auth::user() &&  Auth::user()->open_deal)
-            showModalExchange("", 100, {{Auth::user()->open_deal_id }}, {{$open_order->status}})
-            const elements = document.querySelectorAll('.close');
-            const elements_modal = document.querySelectorAll('.close_modal');
-            elements_modal.forEach((el) => {
-                el.removeAttribute('onclick')
-            });
-            elements.forEach((el) => {
-                el.classList.add('hidden');
-            });
+        showModalExchange("", 100, {{$open_order->order_id }}, {{$open_order->status}})
+        @if($type === 'crypto' && $open_order->status == 4)
+        changeStatusTransaction(5)
+        @endif
+        const elements = document.querySelectorAll('.close');
+        const elements_modal = document.querySelectorAll('.close_modal');
+        elements_modal.forEach((el) => {
+            el.removeAttribute('onclick')
+        });
+        elements.forEach((el) => {
+            el.classList.add('hidden');
+        });
         @endif
 
     </script>

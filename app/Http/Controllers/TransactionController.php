@@ -36,31 +36,33 @@ class TransactionController extends Controller
         return response()->json($transaction);
     }
 
-    public function change(TransactionRequest $request)
+    public function change(Request $request)
     {
         $user = auth()->user();
         $status = $request->status;
-        $transaction = Transaction::findOrFail($request->transaction_id);
-        $transaction->status = $status;
-        $transaction->save();
-        $course_from = (new GetCourse())->run($transaction->order->currency_from);
-        $course_to = (new GetCourse())->run($transaction->order->currency_to);
-        $amount = $request->amount * $course_from / $course_to;
+        $transaction = Transaction::query()->where('id', $request->transaction_id)->first();
 
-
+        $order = Order::findOrFail($transaction->order_id);
+        $course_from = (new GetCourse())->run($order->currency_from);
+        $course_to = (new GetCourse())->run($order->currency_to);
+        $amount = $transaction->amount * $course_from / $course_to;
 
         if($status == 5){
-            (new Add())->run($amount, $transaction->order->currency_to);
+            (new Add())->run($order->currency_to,$amount);
             $user->open_deal = 0;
             $user->open_deal_id = null;
+            $user->limit_deals -= 1;
             $user->save();
+
         }
         elseif ($status == 6){
-            (new Add())->run($amount, $transaction->order->currency_from);
+            (new Add())->run($order->currency_from, $amount);
             $user->open_deal = 0;
             $user->open_deal_id = null;
             $user->save();
         }
+        $transaction->status = $status;
+        $transaction->save();
     }
 
 }

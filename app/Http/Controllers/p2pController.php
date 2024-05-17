@@ -43,19 +43,30 @@ class p2pController extends Controller
         $cur_to = Currency::query()->where('symbol', $cur_to)->first();
         $cur_from = Currency::query()->where('symbol', $cur_from)->first();
         $orders = Order::query()->where('currency_from', $cur_from->id)->where('currency_to', $cur_to->id)->get()->toArray();
+        usort($orders, function ($a, $b) {
+            $scoreA = ($a['bestPrice'] ? 1 : 0) + ($a['AutoMode'] ? 2 : 0);
+            $scoreB = ($b['bestPrice'] ? 1 : 0) + ($b['AutoMode'] ? 2 : 0);
+
+            return $scoreB - $scoreA;
+        });
         if($user && $user->open_deal){
             $open_order = Transaction::query()->where('id', $user->open_deal_id)->first();
         } else {
             $open_order = null;
         }
+
         foreach ($orders as $key => $order) {
             $price_cur = Currency::query()->where('id', $order['currency_from'])->first();
             $price = (new GetCourse())->run($order['currency_from']);
             $orders[$key]['price'] = number_format($price, 2, '.', '');
             $orders[$key]['currency_name'] = $price_cur->symbol;
         }
+
         $balance = Balance::query()->where('currency', $cur_from->id)->first();
-        $currencies = (new GetCrypto())->run();
+        $main_currency = Currency::query()->where('symbol', $user->main_currency)->first()->toArray();
+        $currencies_from = (new GetCrypto())->run();
+        $currencies_from[] = $main_currency;
+        $currencies_to = (new GetCrypto())->run();
 
 
         if($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
@@ -66,7 +77,6 @@ class p2pController extends Controller
             $type = 'fiat_crypto';
         }
 
-
-        return view('pages.p2p', ['orders' => $orders, 'currencies' => $currencies, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order]);
+        return view('pages.p2p', ['orders' => $orders, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from,'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order]);
     }
 }

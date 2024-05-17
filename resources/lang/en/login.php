@@ -10,5 +10,7 @@ return [
     'btn_login' => 'Login',
     'forgot_password' => 'Forgot password?',
     'register' => 'Create now',
+    'register_' => 'Register',
+    'already_have_account' => 'Already have an account?',
     'password' => 'Password',
 ];

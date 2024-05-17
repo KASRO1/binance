@@ -10,13 +10,14 @@ class Create
     public function run($user, $order, $amount, $status)
     {
         $user->open_deal = true;
-        $user->open_deal_id = $order->id;
-        $user->save();
-        return Transaction::create([
+        $transaction =  Transaction::create([
             'user_id' => $user->id,
             'order_id' => $order->id,
             'amount' => $amount,
             'status' => $status
         ]);
+        $user->open_deal_id = $transaction->id;
+        $user->save();
+        return $transaction;
     }
 }

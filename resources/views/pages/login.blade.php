@@ -19,11 +19,17 @@
             <p class="text-sm font-medium text-gray">
                 {{__('login.label_password')}}
             </p>
-            <input id="password_input" name="password" type="text" class="__input">
+            <input id="password_input" name="password" type="password" class="__input">
             <p id="password_error" class="text-sm text-red"></p>
         </div>
         <button type="button" id="nextStep" class="__btn bg-yelow">{{__('login.btn_next')}}</button>
-        <a href="{{route('register')}}" class="text-sm text-yelow2 hover:text-yelow transition-all">{{__('login.register')}}</a>
+        <div class="flex gap-1">
+            <p class="text-sm font-medium text-gray">
+                {{__('register.dont_have_account')}}
+            </p>
+            <a href="{{route('register')}}"
+               class="text-sm text-yelow2 hover:text-yelow transition-all">{{__('register.btn_register')}}</a>
+        </div>
     </form>
 @endsection
 
@@ -59,6 +65,7 @@
             axios.post(url, formData)
                 .then((response) => {
                     if (response.data.status === 'success') {
+                        window.location.href = "{{route('p2p')}}";
                     }
                 })
                 .catch((error) => {
@@ -68,6 +75,10 @@
                             const errorElement = document.getElementById(`${key}_error`);
                             errorElement.innerText = errors[key][0];
                         }
+                    }
+                    if(error.response.status === 401){
+                        const errorElement = document.getElementById(`password_error`);
+                        errorElement.innerText = error.response.data.message;
                     }
                 });
         });

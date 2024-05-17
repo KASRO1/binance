@@ -41,6 +41,7 @@ function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
     }, timeout);
 }
 
+
 function setLoading(el) {
     el.innerHTML = `
         <div class="bn-spinner__nezha"><div class="nezha-line" style="animation-delay: 50ms;"></div><div class="nezha-line" style="animation-delay: 100ms;"></div><div class="nezha-line" style="animation-delay: 150ms;"></div><div class="nezha-line" style="animation-delay: 200ms;"></div></div>

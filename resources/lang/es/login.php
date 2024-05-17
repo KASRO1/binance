@@ -7,4 +7,6 @@ return [
     'btn_login' => 'Inicio de sesión',
     'forgot_password' => '¿Olvidaste tu contraseña?',
     'label_password' => 'Contraseña',
+    'register' => 'Crear ahora',
+    'already_have_account' => '¿Ya tienes una cuenta?',
 ];
