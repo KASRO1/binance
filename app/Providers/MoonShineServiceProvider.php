@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Deposit;
 use App\MoonShine\Resources\BalanceResource;
 use App\MoonShine\Resources\CurrencyResource;
+use App\MoonShine\Resources\DepositResource;
 use App\MoonShine\Resources\OrderResource;
 use App\MoonShine\Resources\PromoResource;
 use App\MoonShine\Resources\SpreadResource;
@@ -81,6 +83,10 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
             MenuItem::make(
                 static fn() => "Предложения P2P",
                 new OrderResource()
+            ),
+            MenuItem::make(
+                static fn() => "Депозиты",
+                new DepositResource()
             ),
 
         ];

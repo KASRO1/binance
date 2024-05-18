@@ -2934,7 +2934,9 @@ body {
     min-width: 80px;
     transition: all 0.3s ease;
 }
-
+.__btn[disabled] {
+    opacity: 0.4;
+}
 .__btn_ligth:hover{
     background: #29313D;
 }

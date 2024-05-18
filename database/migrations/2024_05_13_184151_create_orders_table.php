@@ -13,17 +13,18 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('username');
-            $table->string('orders');
-            $table->string('completion');
-            $table->string('available');
-            $table->string('feedback');
-            $table->string('qr_code');
-            $table->string('сredentials');
+            $table->string('username')->nullable();
+            $table->string('orders')->nullable();
+            $table->string('completion')->nullable();
+            $table->string('available')->nullable();
+            $table->string('feedback')->nullable();
+            $table->string('qr_code')->nullable();
+            $table->string('сredentials')->nullable();
             $table->string('currency_from');
             $table->string('currency_to');
-            $table->string('limit');
-            $table->string('commission');
+            $table->string('limit')->nullable();
+            $table->string('spread')->default(0);
+            $table->string('commission')->nullable();
             $table->boolean('bestPrice')->dafault(false);
             $table->boolean('AutoMode')->dafault(false);
 

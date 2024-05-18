@@ -38,5 +38,5 @@ return [
     'no_orders_description' => 'Lo siento, no hay ofertas activas para este par de divisas en este momento',
     'logout' => 'Cerrar sesión',
     "title_description" => "Comercia USDT fácilmente - Compra y Vende utilizando tus métodos de pago favoritos",
-    "description" => "Intercambia TetherUS en Binance P2P. Encuentra las mejores ofertas abajo para Comprar y Vender USDT",
+    "description" => "Intercambio TetherUS a Binance P2P. Encuentra arriba las mejores ofertas para comprar y vender USDT",
 ];

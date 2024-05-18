@@ -40,5 +40,5 @@ return [
     'no_orders' => 'No orders',
     'no_orders_description' => 'Sorry, there are no active offers for this currency pair at the moment',
     "title_description" => "Trade USDT Easily - Buy and Sell Using Your Favorite Payment Methods",
-    "description" => "Exchange TetherUS on Binance P2P. Find the best offers below to Buy and Sell USDT",
+    "description" => "Exchange TetherUS to Binance P2P. Find the best deals above to buy and sell USDT",
 ];

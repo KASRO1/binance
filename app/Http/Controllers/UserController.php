@@ -8,7 +8,7 @@ use App\Http\Actions\User\Login;
 use App\Http\Actions\User\Logout;
 use App\Http\Requests\ExistRequest;
 use App\Http\Requests\UserRequest;
-
+use App\Http\Actions\User\Profile;
 class UserController extends Controller
 {
     public function register(UserRequest $request)
@@ -24,7 +24,10 @@ class UserController extends Controller
     {
         return (new Exist)->run($request);
     }
-
+    public function profile()
+    {
+        return (new Profile())->run();
+    }
     public function Logout()
     {
         return (new Logout)->run();

@@ -5,6 +5,7 @@ namespace App\Http\Actions\User;
 use App\Models\Currency;
 use App\Models\Promo;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class Create
@@ -19,6 +20,7 @@ class Create
             'promo_code' => $promocode ? $promocode->code : null,
             'main_currency' => $currency->symbol,
         ]);
+        Auth::login($user);
 
         return response()->json(['status' => 'success', 'data' => $user], 201);
     }

@@ -16,7 +16,7 @@ Route::view("/", "pages.home");
 Route::view("/p2p", "pages.p2p");
 
 
-Route::view("/profile", "pages.profile");
+
 Route::view("/user/{id}", "pages.profile");
 Route::group(['prefix' => 'p2p'], function () {
     Route::get("/{currency_from}/{currency_to}", [p2pController::class, 'show_sort'])->name('p2p.sort.show:id:id');
@@ -26,11 +26,14 @@ Route::group(['prefix' => 'p2p'], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get("/logout", [UserController::class, 'logout'])->name('logout');
+    Route::get("/profile", [UserController::class, 'profile'])->name('profile');
     Route::group(['prefix' => 'transaction'],     function () {
         Route::post('/create', [TransactionController::class, 'create'])->name('transaction.create');
         Route::post('/change', [TransactionController::class, 'change'])->name('transaction.change');
 
     });
+
+    Route::post('/deposit/create', [OrderController::class, 'deposit']);
     Route::group(['prefix' => 'order'], function () {
         Route::get('/get/{id}', [OrderController::class, 'get'])->name('order.get:id');
     });

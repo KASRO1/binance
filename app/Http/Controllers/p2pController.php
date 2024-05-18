@@ -49,34 +49,39 @@ class p2pController extends Controller
 
             return $scoreB - $scoreA;
         });
-        if($user && $user->open_deal){
+        if ($user && $user->open_deal) {
             $open_order = Transaction::query()->where('id', $user->open_deal_id)->first();
         } else {
             $open_order = null;
         }
 
         foreach ($orders as $key => $order) {
-            $price_cur = Currency::query()->where('id', $order['currency_from'])->first();
-            $price = (new GetCourse())->run($order['currency_from']);
+            $price_cur = Currency::query()->where('id', $order['currency_to'])->first();
+            $price = (new GetCourse())->run($order['currency_to']);
             $orders[$key]['price'] = number_format($price, 2, '.', '');
             $orders[$key]['currency_name'] = $price_cur->symbol;
+            $orders[$key]['currency_to_name'] = $price_cur->symbol;
         }
 
         $balance = Balance::query()->where('currency', $cur_from->id)->first();
-        $main_currency = Currency::query()->where('symbol', $user->main_currency)->first()->toArray();
+
         $currencies_from = (new GetCrypto())->run();
-        $currencies_from[] = $main_currency;
-        $currencies_to = (new GetCrypto())->run();
+        if ($user) {
 
+            $main_currency = Currency::query()->where('symbol', $user->main_currency)->first()->toArray();
+            $user->main_currency_arr = $main_currency;
+            $currencies_from[] = $main_currency;
+        }
 
-        if($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
+        $currencies_to = (new GetCurrencies())->run();
+
+        if ($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
             $type = 'fiat';
         } else if ($cur_from->type == 'crypto' && $cur_to->type == 'crypto') {
             $type = 'crypto';
         } else {
             $type = 'fiat_crypto';
         }
-
-        return view('pages.p2p', ['orders' => $orders, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from,'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order]);
+        return view('pages.p2p', ['orders' => $orders,'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, ]);
     }
 }

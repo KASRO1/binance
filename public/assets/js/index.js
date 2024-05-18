@@ -32,6 +32,9 @@ function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
     const modal = document.getElementById("modalTrade");
     modal.classList.add("block");
     updateData(order_id);
+    setInterval((e) => {
+        updateData(order_id)
+    }, 3000);
     hiddenAllStep()
     showStep(step)
     modal.classList.remove("hidden");

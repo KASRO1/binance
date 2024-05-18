@@ -20,11 +20,26 @@
             d="M230.997333 512L116.053333 626.986667 0 512l116.010667-116.010667L230.997333 512zM512 230.997333l197.973333 197.973334 116.053334-115.968L512 0 197.973333 314.026667l116.053334 115.968L512 230.997333z m395.989333 164.992L793.002667 512l116.010666 116.010667L1024.981333 512l-116.992-116.010667zM512 793.002667l-197.973333-198.997334-116.053334 116.010667L512 1024l314.026667-314.026667-116.053334-115.968L512 793.002667z m0-165.973334l116.010667-116.053333L512 396.032 395.989333 512 512 626.986667z m1220.010667 11.946667v-1.962667c0-75.008-40.021333-113.024-105.002667-138.026666 39.978667-21.973333 73.984-58.026667 73.984-121.002667v-1.962667c0-88.021333-70.997333-145.024-185.002667-145.024h-260.992v561.024h267.008c126.976 0.981333 210.005333-51.029333 210.005334-153.002666z m-154.026667-239.957333c0 41.984-34.005333 58.965333-89.002667 58.965333h-113.962666V338.986667h121.984c52.010667 0 80.981333 20.992 80.981333 58.026666v2.005334z m31.018667 224c0 41.984-32.981333 61.013333-87.04 61.013333h-146.944v-123.050667h142.976c63.018667 0 91.008 23.04 91.008 61.013334v1.024z m381.994666 169.984V230.997333h-123.989333v561.024h123.989333v0.981334z m664.021334 0V230.997333h-122.026667v346.026667l-262.997333-346.026667h-114.005334v561.024h122.026667v-356.010666l272 356.992h104.96z m683.946666 0L3098.026667 228.010667h-113.962667l-241.024 564.992h127.018667l50.986666-125.994667h237.013334l50.986666 125.994667h130.005334z m-224.981333-235.008h-148.992l75.008-181.973334 73.984 181.973334z m814.037333 235.008V230.997333h-122.026666v346.026667l-262.997334-346.026667h-114.005333v561.024h122.026667v-356.010666l272 356.992h104.96z m636.970667-91.008l-78.976-78.976c-44.032 39.978667-83.029333 65.962667-148.010667 65.962666-96 0-162.986667-80-162.986666-176v-2.986666c0-96 67.968-174.976 162.986666-174.976 55.978667 0 100.010667 23.978667 144 62.976l78.976-91.008c-51.968-50.986667-114.986667-86.997333-220.970666-86.997334-171.989333 0-292.992 130.986667-292.992 290.005334V512c0 160.981333 122.965333 288.981333 288 288.981333 107.989333 1.024 171.989333-36.992 229.973333-98.986666z m527.018667 91.008v-109.994667h-305.024v-118.016h265.002666v-109.994667h-265.002666V340.992h301.013333V230.997333h-422.997333v561.024h427.008v0.981334z"
             p-id="2935"></path>
     </svg>
-    <div class="h-6 w-6 cursor-pointer" onclick="showModalProfileContent()">
-        <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-            <use xlink:href="#account-f"></use>
-        </svg>
+
+    <div class="flex gap-3  items-center">
+
+        @if(isset($balance))
+            <p class="text-sm rounded-3xl  bg-gray4" style="padding: 3px 10px">
+            {{$balance->amount}} {{$cur_from->symbol}}
+            </p>
+
+        @endif
+
+
+        <div class="h-6 w-6 flex items-center gap-2 cursor-pointer" onclick="showModalProfileContent()">
+
+
+            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <use xlink:href="#account-f"></use>
+            </svg>
+        </div>
     </div>
+
 </header>
 <main class="py-2 px-6 flex-1 flex gap-10 flex-col">
     @yield('content')
@@ -72,11 +87,6 @@
 
             <div class="flex  flex-col gap-2 py-5">
                 <div class="text-xl items-center flex justify-between ">
-                    @if(Auth::check())
-                    <p></p>
-                    @else
-                        <p></p>
-                    @endif
                     <div>
                         <div onclick="closeModalProfileContent()" class="cursor-pointer h-7 w-7">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-11ppfta">
@@ -89,22 +99,23 @@
 
                 </div>
                 @if(Auth::check())
-                <div class="flex gap-4">
-                    <div class="px-4 text-xs font-light py-1 bg-yelow rounded-full">
-                        {{__('p2p.limit_deals')}}: 3
+                    <div class="flex gap-4">
+                        <div class="px-4 text-xs font-light py-1 bg-yelow rounded-full">
+                            {{__('p2p.limit_deals')}}: 3
+                        </div>
+                        <div class="px-4 text-xs font-light py-1 bg-ligth rounded-full">
+                            {{__('p2p.your_profit')}}: <span class="text-green font-semibold">400$</span>
+                        </div>
+                        <div class="px-4 text-xs font-light py-1 bg-ligth rounded-full">
+                            {{__('p2p.balance')}}: <span
+                                class="text-green font-semibold">{{(new \App\Http\Actions\User\Balance\GetFullBalance())->run(Auth::user()) . ' ' . Auth::user()->main_currency}}</span>
+                        </div>
                     </div>
-                    <div class="px-4 text-xs font-light py-1 bg-ligth rounded-full">
-                        {{__('p2p.your_profit')}}: <span class="text-green font-semibold">400$</span>
-                    </div>
-                    <div class="px-4 text-xs font-light py-1 bg-ligth rounded-full">
-                        {{__('p2p.balance')}}: <span class="text-green font-semibold">{{(new \App\Http\Actions\User\Balance\GetFullBalance())->run(Auth::user()) . ' ' . Auth::user()->main_currency}}</span>
-                    </div>
-                </div>
                 @endif
             </div>
             <div class="flex flex-col gap-4">
                 @if(Auth::check())
-                    <div class="flex transition-all  cursor-pointer items-center font-normal text-gray2 gap-3">
+                    <a href="{{route('profile')}}" class="flex transition-all  cursor-pointer items-center font-normal text-gray2 gap-3">
                         <div class="w-8 h-8">
                             <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                                 <use xlink:href="#user-f"></use>
@@ -113,8 +124,9 @@
                         <p class="text-black">
                             {{__('p2p.my_profile')}}
                         </p>
-                    </div>
-                    <div onclick="window.location.href = '{{route('p2p')}}'" class="flex transition-all  cursor-pointer items-center font-normal text-gray2 gap-3">
+                    </a>
+                    <div onclick="window.location.href = '{{route('p2p')}}'"
+                         class="flex transition-all  cursor-pointer items-center font-normal text-gray2 gap-3">
                         <div class="w-8 h-8">
                             <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                                 <use xlink:href="#wallet-f"></use>
@@ -124,18 +136,18 @@
                             P2P
                         </p>
                     </div>
-                    <div class="flex transition-all  cursor-pointer  items-center font-normal text-gray2 gap-3">
-                        <div class="w-8 h-8">
-                            <svg viewBox="0 0 24 24" class="chat-icon" style="width: 32px; height: 32px;">
-                                <path
-                                    d="M21.002 17V12C21.002 11.6893 20.9862 11.3824 20.9555 11.0798C20.9528 11.0532 20.95 11.0266 20.947 11C20.4496 6.50005 16.6345 3 12.002 3C7.03139 3 3.00195 7.02944 3.00195 12V17H8.00195V11H5.5784C6.05941 7.88491 8.75217 5.5 12.002 5.5C15.2517 5.5 17.9445 7.88491 18.4255 11H16.002V17H16.9009C16.0053 17.8777 14.8748 18.5166 13.6124 18.8139C13.2482 18.3202 12.6625 18 12.002 18C10.8974 18 10.002 18.8954 10.002 20C10.002 21.1046 10.8974 22 12.002 22C12.8165 22 13.5173 21.5131 13.8292 20.8144C16.18 20.3296 18.1958 18.9281 19.4864 17H21.002Z"
-                                    fill="currentColor"></path>
-                            </svg>
-                        </div>
-                        <p class="text-black">
-                            {{__('p2p.my_profile')}}
-                        </p>
-                    </div>
+{{--                    <div class="flex transition-all  cursor-pointer  items-center font-normal text-gray2 gap-3">--}}
+{{--                        <div class="w-8 h-8">--}}
+{{--                            <svg viewBox="0 0 24 24" class="chat-icon" style="width: 32px; height: 32px;">--}}
+{{--                                <path--}}
+{{--                                    d="M21.002 17V12C21.002 11.6893 20.9862 11.3824 20.9555 11.0798C20.9528 11.0532 20.95 11.0266 20.947 11C20.4496 6.50005 16.6345 3 12.002 3C7.03139 3 3.00195 7.02944 3.00195 12V17H8.00195V11H5.5784C6.05941 7.88491 8.75217 5.5 12.002 5.5C15.2517 5.5 17.9445 7.88491 18.4255 11H16.002V17H16.9009C16.0053 17.8777 14.8748 18.5166 13.6124 18.8139C13.2482 18.3202 12.6625 18 12.002 18C10.8974 18 10.002 18.8954 10.002 20C10.002 21.1046 10.8974 22 12.002 22C12.8165 22 13.5173 21.5131 13.8292 20.8144C16.18 20.3296 18.1958 18.9281 19.4864 17H21.002Z"--}}
+{{--                                    fill="currentColor"></path>--}}
+{{--                            </svg>--}}
+{{--                        </div>--}}
+{{--                        <p class="text-black">--}}
+{{--                            {{__('p2p.my_profile')}}--}}
+{{--                        </p>--}}
+{{--                    </div>--}}
                 @endif
                 <div class="menu">
                     <div
@@ -169,7 +181,8 @@
                     </div>
                 </div>
                 @if(Auth::check())
-                    <div class="flex transition-all  cursor-pointer items-center font-normal text-gray2 gap-3">
+                    <a href="{{route('logout')}}"
+                       class="flex transition-all  cursor-pointer items-center font-normal text-gray2 gap-3">
                         <div class="w-8 h-8">
                             <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                                 <use xlink:href="#log-out-f"></use>
@@ -178,40 +191,40 @@
                         <p class="text-black">
                             {{__('p2p.logout')}}
                         </p>
-                    </div>
+                    </a>
                 @endif
                 @if(!Auth::check())
-                        <div class="menu">
-                            <div
-                                class="menu-link flex transition-all  cursor-pointer  items-center font-normal text-gray2 justify-between">
-                                <div class="flex gap-2 items-center">
-                                    <div class="w-8 h-8">
-                                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                                            <use xlink:href="#language-f"></use>
-                                        </svg>
-                                    </div>
-                                    <p class="text-black">
-                                        Account
-                                    </p>
-                                </div>
-                                <div class="w-4 h-4 text-gray">
-                                    <svg class="bn-svg header-nav-collapseicon" viewBox="0 0 24 24"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                              d="M12.11 12.178L16 8.287l1.768 1.768-5.657 5.657-1.768-1.768-3.889-3.889 1.768-1.768 3.889 3.89z"
-                                              fill="currentColor"></path>
+                    <div class="menu">
+                        <div
+                            class="menu-link flex transition-all  cursor-pointer  items-center font-normal text-gray2 justify-between">
+                            <div class="flex gap-2 items-center">
+                                <div class="w-8 h-8">
+                                    <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                                        <use xlink:href="#language-f"></use>
                                     </svg>
                                 </div>
+                                <p class="text-black">
+                                    Account
+                                </p>
                             </div>
-                            <div style="padding-inline-start: 44px" class="menu-block hidden flex flex-col ">
-                                <a href="{{route("login")}}" class="py-5">
-                                    {{__('login.btn_login')}}
-                                </a>
-                                <a href="{{route("register")}}" class="py-5">
-                                    {{__('register.btn_register')}}
-                                </a>
+                            <div class="w-4 h-4 text-gray">
+                                <svg class="bn-svg header-nav-collapseicon" viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M12.11 12.178L16 8.287l1.768 1.768-5.657 5.657-1.768-1.768-3.889-3.889 1.768-1.768 3.889 3.89z"
+                                          fill="currentColor"></path>
+                                </svg>
                             </div>
                         </div>
+                        <div style="padding-inline-start: 44px" class="menu-block hidden flex flex-col ">
+                            <a href="{{route("login")}}" class="py-5">
+                                {{__('login.btn_login')}}
+                            </a>
+                            <a href="{{route("register")}}" class="py-5">
+                                {{__('register.btn_register')}}
+                            </a>
+                        </div>
+                    </div>
                 @endif
 
             </div>
