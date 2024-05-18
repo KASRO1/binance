@@ -1,7 +1,6 @@
 @extends('base')
 
 @section('title', __('p2p.title'))
-
 @section('content')
 
     <div class="py-2 px-6 flex-1 flex gap-10 flex-col">
@@ -95,7 +94,8 @@
                     </button>
                 </form>
             </div>
-            @if(Auth::check() && Auth::user()->limit_deals == 0)
+
+            @if(Auth::check() && Auth::user()->limit_deals == 0 && $type === 'crypto')
                 <div class="flex flex-col pt-7 gap-3">
                     <div class="h-24 items-center justify-center flex text-red">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-24">
@@ -109,15 +109,19 @@
                         You have exhausted your cryptocurrency transaction limit
                     </p>
                     <p class="text-gray2 text-sm text-center">
-                        To continue changing currencies, add X(user currencies) to your account
+                        {{$error}}
                     </p>
                     <a href="{{route('p2p.sort.show:id:id', [$user->main_currency_arr['symbol'], $cur_to->symbol])}}"
                        class="flex items-center justify-center __btn bg-yelow">Exchange</a>
                 </div>
-
-            @elseif(count($orders) != 0 )
+            @elseif(count($orders) != 0)
                 @foreach($orders as $order)
-                    <div class="flex border-b border-gray4 py-3 flex-col gap-1">
+                    <div
+                        class="{{$order['bestPrice'] ? 'border-yelow border rounded-xl relative py-3 pt-7 px-3 ' : ''}}  flex border-b border-gray4 py-3 flex-col gap-1">
+                        <div style="top: 0; left: 0; border-radius: 10px 0px 10px 0px "
+                             class="absolute text-xs px-5  bg-yelow_3 text-yelowп ">
+                            Best price
+                        </div>
                         <div class="flex items-center gap-2">
                             <div
                                 class="flex items-center justify-center relative rounded-md text-center flex-none bg-gray4 text-white"
@@ -149,28 +153,12 @@
                             {{__('p2p.limit')}}: {{$order['limit'] }}
                         </div>
                         <div
-                            class="flex pt-3 items-center {{!$order['bestPrice'] && !$order['AutoMode'] ? 'justify-end' : 'justify-between'}}">
-                            @if($order['bestPrice'] && $order['AutoMode'])
-                                <div class="flex gap-4 items-center">
-                                    <div class=" flex items-center text-xs gap-2">
-                                        <div class="w-1 h-[10px] rounded bg-green"></div>
-                                        Best price
-                                    </div>
-                                    <div class="flex items-center text-xs gap-2">
-                                        <div class="w-1 h-[10px] rounded bg-yelow2"></div>
-                                        Auto mode
-                                    </div>
-                                </div>
+                            class=" flex pt-3 items-center {{!$order['AutoMode']  ? 'justify-end' : 'justify-between'}}">
 
-                            @elseif($order['AutoMode'])
+                            @if($order['AutoMode'])
                                 <div class="flex items-center text-xs gap-2">
                                     <div class="w-1 h-[10px] rounded bg-yelow2"></div>
                                     Auto mode
-                                </div>
-                            @elseif($order['bestPrice'])
-                                <div class="px-4 rounded-xl  bg-green flex items-center text-xs gap-2">
-                                    {{--                                    <div class="w-1 h-[10px] rounded bg-green"></div>--}}
-                                    Best price
                                 </div>
 
                             @endif
@@ -185,7 +173,7 @@
                         </div>
                     </div>
                 @endforeach
-            @else
+            @elseif(count($orders) == 0)
                 <div class="flex flex-col pt-5 gap-3">
                     <div class="h-24 items-center justify-center flex text-red">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-24">
@@ -221,7 +209,7 @@
         <form id="TradeForm" class="flex flex-1 h-full flex-col gap-5">
             <input class="hidden" value="" id="order_id">
             <input class="hidden" value="{{$open_order ? $open_order->id : null}}" id="transaction_id">
-            <input class="hidden" value="{{$open_order ? $open_order->status : null}}" id="status">
+            <input class="hidden" value="{{$open_order ? $open_order->status : 1}}" id="status">
             <input class="hidden" value="{{$balance ? $balance['amount'] : null}}" id="balance">
             <input class="hidden" value="{{$open_order ? $open_order->amount : null}}" id="amount">
             <div class="flex flex-col">
@@ -318,7 +306,7 @@
                         </div>
                     </div>
                 @endif
-                <input name="amount" placeholder="Amount" type="text" class="__input text-black mb-3"/>
+                <input name="amount" id="amount_el" placeholder="Amount" type="text" class="__input text-black mb-3"/>
                 <button type="button" class="__btn bg-yelow nextStep">{{__('p2p.exchange')}}</button>
                 <button type="button" onclick="closeModalExchange()"
                         class="__btn bg-red text-white">{{__('p2p.close')}}</button>
@@ -437,8 +425,10 @@
                 <label class="__btn flex justify-center cursor-pointer items-center bg-green text-white" for="receipt">
                     {{__('p2p.select_image')}}
                 </label>
-                <input name="document" id="receipt" type="file" accept="image/*" class="__input hidden text-black mb-3"/>
-                <button type="button" disabled id="file_input" class="__btn bg-yelow nextStep">{{__('p2p.next')}}</button>
+                <input name="document" id="receipt" type="file" accept="image/*"
+                       class="__input hidden text-black mb-3"/>
+                <button type="button" disabled id="file_input"
+                        class="__btn bg-yelow nextStep">{{__('p2p.next')}}</button>
                 <button type="button" onclick="backStep(2)"
                         class="__btn bg-gray2/30 text-black">{{__('p2p.back')}}</button>
             </div>
@@ -500,11 +490,16 @@
     <script>
         const select2 = new ItcCustomSelect(document.getElementById('select-2'));
         const select3 = new ItcCustomSelect(document.getElementById('select-3'));
+        @if(Auth::user() &&  Auth::user()->open_deal)
+        let step = {{$open_order->status}};
 
+        @else
+        let step = 1;
+
+        @endif
         function updateData(order_id) {
             axios.get('/order/get/' + order_id)
                 .then(function (response) {
-                    console.log(response.data);
                     let order = response.data;
 
                     document.querySelectorAll('#order_id').forEach(
@@ -516,9 +511,9 @@
                     document.querySelectorAll('#status').forEach(
                         (el) => {
                             el.value = order.status;
-                            if(order.status){
-                                changeStatusTransaction(step)
-                            }
+                            document.getElementById('status').value = order.status;
+                            step = order.status;
+                            changeStatusTransaction(order.status)
                         }
                     );
 
@@ -577,33 +572,19 @@
 
 
         }
-        @if(Auth::user() &&  Auth::user()->open_deal)
-        let step = {{$open_order->status}};
-        @else
-        let step = 1;
-        @endif
-
 
 
         const nextStep = document.querySelectorAll('.nextStep');
 
-        function hiddenAllStep() {
-            document.getElementById('infoExchange').classList.add('hidden');
-            document.getElementById('paymentExchange').classList.add('hidden');
-            document.getElementById('documentUpload').classList.add('hidden');
-            document.getElementById('loadingExchange').classList.add('hidden');
-            document.getElementById('successExchange').classList.add('hidden');
-            document.getElementById('errorExchange').classList.add('hidden');
-        }
 
         function createTransaction(step) {
+            console.log('При создани' + step)
             axios.post('/transaction/create', {
                 order_id: document.getElementById('order_id').value,
                 amount: document.getElementsByName('amount')[0].value,
-                status: document.getElementById('status').value,
+                status: step,
             })
                 .then(function (response) {
-                    console.log(response.data);
                     const transaction_id = document.getElementById('transaction_id');
                     transaction_id.value = response.data.id;
                     showStep(step);
@@ -614,14 +595,15 @@
         }
 
         function changeStatusTransaction(step) {
+            console.log(step)
             axios.post('{{route('transaction.change')}}', {
                 order_id: document.getElementById('order_id').value,
                 transaction_id: document.getElementById('transaction_id').value,
                 status: step,
             })
                 .then(function (response) {
-                    console.log(response.data);
                     showStep(step);
+
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -635,7 +617,6 @@
 
         function showStep(step) {
             hiddenAllStep();
-            console.log(step);
             if (step == 1) {
                 document.getElementById('infoExchange').classList.remove('hidden');
             } else if (step == 2) {
@@ -651,52 +632,31 @@
             }
         }
 
-        function confirmDeals() {
-            let order_id = document.getElementById('order_id').value;
-            let status = document.getElementById('status').value;
-            let amount = document.getElementsByName('amount')[0].value;
-            axios.post('/transaction/confirm', {
-                order_id: order_id,
-                status: status,
-                amount: amount,
-            })
-                .then(function (response) {
-                    console.log(response.data);
-                    showStep(5);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    showStep(6);
-                });
-        }
-
         nextStep.forEach((el) => {
             el.addEventListener('click', () => {
                 step++;
+                console.log(step)
+
                 const status = document.getElementById('status');
                 status.value = step;
                 el.innerHTML = `<div class="bn-spinner__nezha"><div class="nezha-line" style="animation-delay: 50ms;"></div><div class="nezha-line" style="animation-delay: 100ms;"></div><div class="nezha-line" style="animation-delay: 150ms;"></div><div class="nezha-line" style="animation-delay: 200ms;"></div></div>`;
-                setTimeout(() => {
-                    @if($type == 'crypto')
-                    if (step == 2) {
-                        createTransaction(4);
-                        setTimeout(() => {
-                            changeStatusTransaction(5);
-                        }, 5000)
+                @if($type == 'crypto')
+                if (step == 1) {
+                    createTransaction(4);
+                    setTimeout(() => {
+                        changeStatusTransaction(5)
+                    }, 5000)
+                }
+                @elseif($type == 'fiat_crypto')
+                if (step == 1) {
+                    createTransaction(2);
+                } else {
+                    changeStatusTransaction(step);
+                }
+                @endif
+                updateData(document.getElementById('order_id').value)
 
-                    }
-                    @elseif($type == 'fiat')
-
-                        @if(isset($open_order))
-                        changeStatusTransaction(step);
-                        @else
-                        createTransaction(2);
-                        @endif
-
-
-                    @endif
-                        el.innerHTML = `Next`;
-                }, 1000);
+                el.innerHTML = `Next`;
 
             });
         });
@@ -716,6 +676,7 @@
 
         @if(Auth::user() &&  Auth::user()->open_deal)
         showModalExchange("", 100, {{$open_order->order_id }}, {{$open_order->status}})
+        changeStatusTransaction({{$open_order->status}})
         @if($type === 'crypto' && $open_order->status == 4)
         changeStatusTransaction(5)
         @endif
@@ -732,8 +693,7 @@
 
         const receipt = document.getElementById('receipt')
         const file_input = document.getElementById('file_input')
-        receipt.addEventListener('change', (e) =>
-        {
+        receipt.addEventListener('change', (e) => {
             file_input.disabled = false;
             file_input.setAttribute('type', 'submit')
         })
@@ -742,7 +702,7 @@
             e.preventDefault()
             const formData = new FormData(TradeForm)
             formData.append('currency', {{$cur_from['id']}})
-            formData.append('amount', document.getElementById('amount').value)
+            formData.append('amount', document.getElementById('amount_el').value)
             formData.append('transaction_id', document.getElementById('transaction_id').value)
             axios.post('/deposit/create', formData)
                 .then(function (response) {
@@ -752,7 +712,9 @@
                     console.log(error);
                 });
         })
-
+        setInterval(() => {
+            updateData(document.getElementById('order_id').value)
+        }, 10000)
 
     </script>
 @endsection

@@ -29,13 +29,13 @@ class DepositResource extends ModelResource
     protected string $model = Deposit::class;
 
     protected string $title = 'Депозиты';
-    protected function beforeUpdating(Model $item): Model
+    protected function afterUpdated(Model $item): Model
     {
         $transaction = Transaction::query()->where('id', $item->transaction_id)->first();
-        if($item->status == 1){
+        if($item->status == 2){
             $transaction->status = 5;
         }
-        elseif ($item->status == -1){
+        elseif ($item->status == 0){
             $transaction->status = 6;
         }
         else{
@@ -59,7 +59,7 @@ class DepositResource extends ModelResource
                 Text::make('Сумма', 'amount')->sortable(),
                 Image::make('Скриншот оплаты', 'screenshot'),
                 Select::make('Валюта', 'currency')->options((new GetFiat())->run('options'))->sortable(),
-                Select::make('Статус', 'status')->options(['-1' => 'Closed', '0' => 'Waiting', '1' => 'Success'])->sortable(),
+                Select::make('Статус', 'status')->options(['Closed', 'Waiting', 'Success'])->sortable(),
             ]),
         ];
     }

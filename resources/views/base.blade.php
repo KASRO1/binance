@@ -23,12 +23,13 @@
 
     <div class="flex gap-3  items-center">
 
-        @if(isset($balance))
+        @if(Auth::check() && isset($balance_to_main_cur) )
             <p class="text-sm rounded-3xl  bg-gray4" style="padding: 3px 10px">
-            {{$balance->amount}} {{$cur_from->symbol}}
+                {{number_format($balance_to_main_cur, 3, '.', '') }} {{$user['main_currency']}}
             </p>
-
         @endif
+
+
 
 
         <div class="h-6 w-6 flex items-center gap-2 cursor-pointer" onclick="showModalProfileContent()">
@@ -115,7 +116,8 @@
             </div>
             <div class="flex flex-col gap-4">
                 @if(Auth::check())
-                    <a href="{{route('profile')}}" class="flex transition-all  cursor-pointer items-center font-normal text-gray2 gap-3">
+                    <a href="{{route('profile')}}"
+                       class="flex transition-all  cursor-pointer items-center font-normal text-gray2 gap-3">
                         <div class="w-8 h-8">
                             <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                                 <use xlink:href="#user-f"></use>
@@ -136,18 +138,18 @@
                             P2P
                         </p>
                     </div>
-{{--                    <div class="flex transition-all  cursor-pointer  items-center font-normal text-gray2 gap-3">--}}
-{{--                        <div class="w-8 h-8">--}}
-{{--                            <svg viewBox="0 0 24 24" class="chat-icon" style="width: 32px; height: 32px;">--}}
-{{--                                <path--}}
-{{--                                    d="M21.002 17V12C21.002 11.6893 20.9862 11.3824 20.9555 11.0798C20.9528 11.0532 20.95 11.0266 20.947 11C20.4496 6.50005 16.6345 3 12.002 3C7.03139 3 3.00195 7.02944 3.00195 12V17H8.00195V11H5.5784C6.05941 7.88491 8.75217 5.5 12.002 5.5C15.2517 5.5 17.9445 7.88491 18.4255 11H16.002V17H16.9009C16.0053 17.8777 14.8748 18.5166 13.6124 18.8139C13.2482 18.3202 12.6625 18 12.002 18C10.8974 18 10.002 18.8954 10.002 20C10.002 21.1046 10.8974 22 12.002 22C12.8165 22 13.5173 21.5131 13.8292 20.8144C16.18 20.3296 18.1958 18.9281 19.4864 17H21.002Z"--}}
-{{--                                    fill="currentColor"></path>--}}
-{{--                            </svg>--}}
-{{--                        </div>--}}
-{{--                        <p class="text-black">--}}
-{{--                            {{__('p2p.my_profile')}}--}}
-{{--                        </p>--}}
-{{--                    </div>--}}
+                    {{--                    <div class="flex transition-all  cursor-pointer  items-center font-normal text-gray2 gap-3">--}}
+                    {{--                        <div class="w-8 h-8">--}}
+                    {{--                            <svg viewBox="0 0 24 24" class="chat-icon" style="width: 32px; height: 32px;">--}}
+                    {{--                                <path--}}
+                    {{--                                    d="M21.002 17V12C21.002 11.6893 20.9862 11.3824 20.9555 11.0798C20.9528 11.0532 20.95 11.0266 20.947 11C20.4496 6.50005 16.6345 3 12.002 3C7.03139 3 3.00195 7.02944 3.00195 12V17H8.00195V11H5.5784C6.05941 7.88491 8.75217 5.5 12.002 5.5C15.2517 5.5 17.9445 7.88491 18.4255 11H16.002V17H16.9009C16.0053 17.8777 14.8748 18.5166 13.6124 18.8139C13.2482 18.3202 12.6625 18 12.002 18C10.8974 18 10.002 18.8954 10.002 20C10.002 21.1046 10.8974 22 12.002 22C12.8165 22 13.5173 21.5131 13.8292 20.8144C16.18 20.3296 18.1958 18.9281 19.4864 17H21.002Z"--}}
+                    {{--                                    fill="currentColor"></path>--}}
+                    {{--                            </svg>--}}
+                    {{--                        </div>--}}
+                    {{--                        <p class="text-black">--}}
+                    {{--                            {{__('p2p.my_profile')}}--}}
+                    {{--                        </p>--}}
+                    {{--                    </div>--}}
                 @endif
                 <div class="menu">
                     <div

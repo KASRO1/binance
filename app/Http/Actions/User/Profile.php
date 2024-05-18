@@ -14,7 +14,6 @@ class Profile
     {
         $user = Auth::user();
         $user->color = $this->get_color($user['email'][0]);
-        $user->main_currency = Currency::query()->where('id', $user->main_currency)->first();
         $transactions = Transaction::query()->where('user_id', $user->id)->latest('created_at')->get()->toArray();
         foreach ($transactions as $key => $transaction){
             $order = Order::query()->where('id', $transaction['order_id'])->first()->toArray();
@@ -56,4 +55,3 @@ class Profile
     }
 
 }
-

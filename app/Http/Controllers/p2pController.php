@@ -7,6 +7,7 @@ use App\Http\Actions\Currency\GetCrypto;
 use App\Http\Actions\Currency\GetCurrencies;
 use App\Models\Balance;
 use App\Models\Currency;
+use App\Models\Deposit;
 use App\Models\Order;
 use App\Models\Spread;
 use App\Models\Transaction;
@@ -64,14 +65,22 @@ class p2pController extends Controller
         }
 
         $balance = Balance::query()->where('currency', $cur_from->id)->first();
-
+        $balance_to_main_cur = 0;
         $currencies_from = (new GetCrypto())->run();
         if ($user) {
-
             $main_currency = Currency::query()->where('symbol', $user->main_currency)->first()->toArray();
             $user->main_currency_arr = $main_currency;
             $currencies_from[] = $main_currency;
+
+            if(!$balance){
+                $balance = 0;
+            }
+            else{
+                $balance_to_main_cur = $balance->amount * $cur_from->course * $main_currency['course'];
+            }
         }
+        $error = $this->checkLimits($user->id);
+
 
         $currencies_to = (new GetCurrencies())->run();
 
@@ -82,6 +91,52 @@ class p2pController extends Controller
         } else {
             $type = 'fiat_crypto';
         }
-        return view('pages.p2p', ['orders' => $orders,'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, ]);
+        return view('pages.p2p', ['error' => $error,'orders' => $orders,'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, 'balance_to_main_cur' => $balance_to_main_cur ]);
+    }
+
+    private function checkLimits($userId)
+    {
+        $deposits = Deposit::where('user_id', $userId)->where('status', 2)->get();
+
+        $firstDeposit = $deposits->first();
+
+
+        $totalProfit = $deposits->sum('amount') - $firstDeposit->amount;
+
+        $completedDeals = $deposits->count();
+
+        $limitMultiplier = 0;
+        if ($completedDeals % 3 == 0) {
+            switch ($completedDeals / 3) {
+                case 1:
+                    $limitMultiplier = 5;
+                    break;
+                case 2:
+                    $limitMultiplier = 10;
+                    break;
+                case 3:
+                    $limitMultiplier = 20;
+                    break;
+                case 4:
+                    $limitMultiplier = 40;
+                    break;
+                case 5:
+                    $limitMultiplier = 80;
+                    break;
+            }
+        }
+
+        $limit = $firstDeposit->amount * $limitMultiplier;
+
+        if ($totalProfit > $limit) {
+            $requiredDeposit = $limit - $totalProfit;
+            $currency = $firstDeposit->currency;
+            $currency = Currency::query()->where('id', $currency)->first()->symbol;
+            return "To continue changing currencies, add {$requiredDeposit} {$currency} to your account";
+        }
+
+        return "To continue changing currencies, add ";
+
+
     }
 }

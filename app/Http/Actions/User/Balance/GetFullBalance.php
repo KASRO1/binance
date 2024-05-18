@@ -17,6 +17,6 @@ class GetFullBalance
             $currency = Currency::query()->where('id', $balance->currency)->first();
             $full_balance += $balance->amount * $currency->course;
         }
-        return number_format($full_balance * $mainCurrency->course ,3);
+        return number_format($full_balance * $mainCurrency->course ,3, '.', '');
     }
 }

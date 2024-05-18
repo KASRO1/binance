@@ -22,6 +22,7 @@ class TransactionController extends Controller
         $amount = $request->amount;
         $cur_from = Currency::query()->where('id', $order->currency_from)->first();
         $cur_to = Currency::query()->where('id', $order->currency_to)->first();
+        $balance = Balance::query()->where('user_id', $user->id)->where('currency', $order->currency_from)->first();
 
         if($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
             $status = '2';
@@ -30,6 +31,9 @@ class TransactionController extends Controller
         } else if ($cur_from->type == 'crypto' && $cur_to->type == 'crypto') {
             $status = '4';
             $type = 'crypto';
+            if ($balance->amount < $amount) {
+                return response()->json(['error' => 'Not enough money'], 400);
+            }
         } else {
             $status = '2';
             $type = 'fiat_crypto';

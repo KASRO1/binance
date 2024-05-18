@@ -32,9 +32,7 @@ function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
     const modal = document.getElementById("modalTrade");
     modal.classList.add("block");
     updateData(order_id);
-    setInterval((e) => {
-        updateData(order_id)
-    }, 3000);
+
     hiddenAllStep()
     showStep(step)
     modal.classList.remove("hidden");
@@ -43,7 +41,14 @@ function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
         modal.classList.add("active");
     }, timeout);
 }
-
+function hiddenAllStep() {
+    document.getElementById('infoExchange').classList.add('hidden');
+    document.getElementById('paymentExchange').classList.add('hidden');
+    document.getElementById('documentUpload').classList.add('hidden');
+    document.getElementById('loadingExchange').classList.add('hidden');
+    document.getElementById('successExchange').classList.add('hidden');
+    document.getElementById('errorExchange').classList.add('hidden');
+}
 
 function setLoading(el) {
     el.innerHTML = `

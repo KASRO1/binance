@@ -10,6 +10,7 @@ class Create
     public function run($user, $order, $amount, $status)
     {
         $user->open_deal = true;
+
         $transaction =  Transaction::create([
             'user_id' => $user->id,
             'order_id' => $order->id,
