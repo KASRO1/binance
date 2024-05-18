@@ -60,20 +60,28 @@ class TransactionController extends Controller
         $currency_to = Currency::query()->where('id', $order->currency_to)->first();
 
         if($status == 5){
-            (new Add())->run($order->currency_to,$amount);
-            $user->open_deal = 0;
-            $user->open_deal_id = null;
-            if($currency_to && $currency_to->spending_limit){
-                $user->limit_deals -= 1;
+            if(!$transaction->balance_already_added){
+                (new Add())->run($order->currency_to, $amount);
+                $user->open_deal = 0;
+                $user->open_deal_id = null;
+                if($currency_to && $currency_to->spending_limit){
+                    $user->limit_deals -= 1;
+                }
+                $user->save();
             }
-            $user->save();
+
 
         }
         elseif ($status == 6){
-            (new Add())->run($order->currency_from, $amount);
-            $user->open_deal = 0;
-            $user->open_deal_id = null;
-            $user->save();
+            if(!$transaction->balance_already_added){
+                (new Add())->run($order->currency_to, $amount);
+                $user->open_deal = 0;
+                $user->open_deal_id = null;
+                if($currency_to && $currency_to->spending_limit){
+                    $user->limit_deals -= 1;
+                }
+                $user->save();
+            }
         }
         elseif ($status == 1){
             $user->open_deal = 0;

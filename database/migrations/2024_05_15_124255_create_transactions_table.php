@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('order_id');
             $table->string('amount');
             $table->string('status');
+            $table->boolean('balance_already_added')->default(false);
             $table->timestamps();
         });
     }

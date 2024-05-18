@@ -106,7 +106,9 @@ class p2pController extends Controller
         $deposits = Deposit::where('user_id', $userId)->where('status', 2)->get();
 
         $firstDeposit = $deposits->first();
-
+        if($firstDeposit == null){
+            return "To continue changing currencies, add ";
+        }
 
         $totalProfit = $deposits->sum('amount') - $firstDeposit->amount;
 

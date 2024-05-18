@@ -25,7 +25,7 @@
 
         @if(Auth::check() && isset($balance_to_main_cur) )
             <p class="text-sm rounded-3xl  bg-gray4" style="padding: 3px 10px">
-                {{number_format($balance_to_main_cur, 3, '.', '') }} {{$user['main_currency']}}
+                {{(new \App\Http\Actions\User\Balance\GetFullBalance())->run(Auth::user()) . ' ' . Auth::user()->main_currency}}
             </p>
         @endif
 

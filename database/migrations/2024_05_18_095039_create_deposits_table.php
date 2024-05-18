@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->string('status')->default(0);
+            $table->string('status')->default(1);
             $table->string('amount');
             $table->string('screenshot');
             $table->string('transaction_id');
+
             $table->string('currency');
             $table->timestamps();
         });

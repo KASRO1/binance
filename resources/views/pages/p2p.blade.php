@@ -118,10 +118,12 @@
                 @foreach($orders as $order)
                     <div
                         class="{{$order['bestPrice'] ? 'border-yelow border rounded-xl relative py-3 pt-7 px-3 ' : ''}}  flex border-b border-gray4 py-3 flex-col gap-1">
-                        <div style="top: 0; left: 0; border-radius: 10px 0px 10px 0px "
-                             class="absolute text-xs px-5  bg-yelow_3 text-yelowп ">
-                            Best price
-                        </div>
+                        @if($order['bestPrice'])
+                            <div style="top: 0; left: 0; border-radius: 10px 0px 10px 0px "
+                                 class="absolute text-xs px-5  bg-yelow_3 text-yelowп ">
+                                Best price
+                            </div>
+                        @endif
                         <div class="flex items-center gap-2">
                             <div
                                 class="flex items-center justify-center relative rounded-md text-center flex-none bg-gray4 text-white"

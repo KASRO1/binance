@@ -13,6 +13,7 @@ class Transaction extends Model
         'user_id',
         'order_id',
         'amount',
-        'status'
+        'status',
+        'balance_already_added'
     ];
 }
