@@ -88,7 +88,14 @@ class p2pController extends Controller
             $type = 'fiat';
         } else if ($cur_from->type == 'crypto' && $cur_to->type == 'crypto') {
             $type = 'crypto';
-        } else {
+        }
+
+        else if($cur_from->type == 'crypto' && $cur_to->type == 'fiat')
+        {
+            $type = 'crypto_fiat';
+        }
+
+        else {
             $type = 'fiat_crypto';
         }
         return view('pages.p2p', ['error' => $error,'orders' => $orders,'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, 'balance_to_main_cur' => $balance_to_main_cur ]);

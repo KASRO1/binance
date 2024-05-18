@@ -375,7 +375,7 @@
                     <input id="credentials" disabled name="password" value="92984829284" type="text"
                            class="__input text-black mb-3"/>
                 </div>
-                @if($type === 'fiat_crypto')
+                @if($type === 'crypto_fiat')
                     <div class="flex flex-col gap-1">
                         <p class="text-sm font-normal text-gray">
                             {{__('p2p.commission')}}
@@ -647,7 +647,7 @@
                         changeStatusTransaction(5)
                     }, 5000)
                 }
-                @elseif($type == 'fiat_crypto')
+                @elseif($type == 'fiat_crypto' || $type == 'crypto_fiat')
                 if (step == 1) {
                     createTransaction(2);
                 } else {
