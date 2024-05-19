@@ -22,18 +22,15 @@ function scrollTop() {
     });
 }
 
-function changeData(currency_name, name, orders, execution_method, completion, payment_time_limit, available, positive_feedback, price, creditals, qr_code, commission) {
 
-}
 
 function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
     const body = document.querySelector("body");
     body.classList.add("overflow-hidden");
     const modal = document.getElementById("modalTrade");
     modal.classList.add("block");
-    updateData(order_id);
-
     hiddenAllStep()
+    updateData(order_id);
     showStep(step)
     modal.classList.remove("hidden");
     setTimeout(() => {

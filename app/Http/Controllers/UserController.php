@@ -9,6 +9,9 @@ use App\Http\Actions\User\Logout;
 use App\Http\Requests\ExistRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Actions\User\Profile;
+use App\Models\Balance;
+use Illuminate\Support\Facades\Auth;
+
 class UserController extends Controller
 {
     public function register(UserRequest $request)
@@ -31,6 +34,11 @@ class UserController extends Controller
     public function Logout()
     {
         return (new Logout)->run();
+    }
+
+    public function balance()
+    {
+        return (new \App\Http\Actions\User\Balance\GetFullBalance())->run(Auth::user());
     }
 
 }

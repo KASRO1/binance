@@ -44,6 +44,8 @@ class p2pController extends Controller
         $cur_to = Currency::query()->where('symbol', $cur_to)->first();
         $cur_from = Currency::query()->where('symbol', $cur_from)->first();
         $orders = Order::query()->where('currency_from', $cur_from->id)->where('currency_to', $cur_to->id)->get()->toArray();
+
+
         usort($orders, function ($a, $b) {
             $scoreA = ($a['bestPrice'] ? 1 : 0) + ($a['AutoMode'] ? 2 : 0);
             $scoreB = ($b['bestPrice'] ? 1 : 0) + ($b['AutoMode'] ? 2 : 0);
@@ -58,8 +60,10 @@ class p2pController extends Controller
 
         foreach ($orders as $key => $order) {
             $price_cur = Currency::query()->where('id', $order['currency_to'])->first();
+            $price_from = (new GetCourse())->run($order['currency_from']);
             $price = (new GetCourse())->run($order['currency_to']);
-            $orders[$key]['price'] = number_format($price, 2, '.', '');
+            $price_cur_from_to_cur_to = $price_from / $price;
+            $orders[$key]['price'] = number_format($price_cur_from_to_cur_to, 5, '.', '');
             $orders[$key]['currency_name'] = $price_cur->symbol;
             $orders[$key]['currency_to_name'] = $price_cur->symbol;
         }
@@ -98,13 +102,12 @@ class p2pController extends Controller
         else {
             $type = 'fiat_crypto';
         }
-        return view('pages.p2p', ['error' => $error,'orders' => $orders,'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, 'balance_to_main_cur' => $balance_to_main_cur ]);
+        return view('pages.p2p', ['error' => $error,'orders' => $orders,'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, 'balance_to_main_cur' => $balance_to_main_cur,  ]);
     }
 
     private function checkLimits($userId)
     {
         $deposits = Deposit::where('user_id', $userId)->where('status', 2)->get();
-
         $firstDeposit = $deposits->first();
         if($firstDeposit == null){
             return "To continue changing currencies, add ";

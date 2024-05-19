@@ -30,7 +30,11 @@ return [
     'status_success' => "¡Buena suerte! Trato hecho",
     "exchange" => "Intercambiar",
     "price" => "Precio",
-    'limit_deals' => 'Límite de transacciones',
+    'your_bonus' => 'Tu bono',
+    'text_error_limit1' => 'Financie su cuenta con',
+    'text_error_limit2' => 'para operar en esa dirección',
+
+    'limit_deals' => 'Se ha superado el límite de transacciones',
     'your_profit' => 'Tu ganancia',
     'my_profile' => 'Mi perfil',
     'support' => 'Soporte',

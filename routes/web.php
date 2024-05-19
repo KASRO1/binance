@@ -13,23 +13,26 @@ use \App\Http\Controllers\SwapController;
 
 
 Route::view("/", "pages.home");
-Route::view("/p2p", "pages.p2p");
 
 
 
 Route::view("/user/{id}", "pages.profile");
-Route::group(['prefix' => 'p2p'], function () {
-    Route::get("/{currency_from}/{currency_to}", [p2pController::class, 'show_sort'])->name('p2p.sort.show:id:id');
-    Route::get("/", [p2pController::class, 'index'])->name('p2p');
-});
+
 
 
 Route::group(['middleware' => 'auth'], function () {
+    Route::group(['prefix' => 'p2p'], function () {
+        Route::get("/{currency_from}/{currency_to}", [p2pController::class, 'show_sort'])->name('p2p.sort.show:id:id');
+        Route::get("/", [p2pController::class, 'index'])->name('p2p');
+    });
+
+    Route::get('/balance/get', [UserController::class, 'balance'])->name('balance.get');
     Route::get("/logout", [UserController::class, 'logout'])->name('logout');
     Route::get("/profile", [UserController::class, 'profile'])->name('profile');
     Route::group(['prefix' => 'transaction'],     function () {
         Route::post('/create', [TransactionController::class, 'create'])->name('transaction.create');
         Route::post('/change', [TransactionController::class, 'change'])->name('transaction.change');
+        Route::get('/get/open', [TransactionController::class, 'open'])->name('transaction.open');
 
     });
 

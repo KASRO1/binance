@@ -95,7 +95,7 @@
                 </form>
             </div>
 
-            @if(Auth::check() && Auth::user()->limit_deals == 0 && $type === 'crypto')
+            @if(Auth::check() && Auth::user()->limit_deals <= 0 && $type === 'crypto')
                 <div class="flex flex-col pt-7 gap-3">
                     <div class="h-24 items-center justify-center flex text-red">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-24">
@@ -281,6 +281,12 @@
                         99.25%
                     </div>
                 </div>
+                <div class="flex font-light text-sm justify-between">
+                    <p class="text-gray">{{__('p2p.your_bonus')}}</p>
+                    <div class="text-black items-center flex gap-1">
+                        {{(new \App\Http\Actions\Bonus\Get())->run() == 1 ? 0 : (new \App\Http\Actions\Bonus\Get())->run()}} %
+                    </div>
+                </div>
                 <p class="font-medium text-black">
                     {{__("p2p.payment_details")}}
                 </p>
@@ -429,7 +435,7 @@
                 </label>
                 <input name="document" id="receipt" type="file" accept="image/*"
                        class="__input hidden text-black mb-3"/>
-                <button type="button" disabled id="file_input"
+                <button type="submit" disabled id="file_input"
                         class="__btn bg-yelow nextStep">{{__('p2p.next')}}</button>
                 <button type="button" onclick="backStep(2)"
                         class="__btn bg-gray2/30 text-black">{{__('p2p.back')}}</button>
@@ -482,6 +488,7 @@
                 <button type="button" onclick="closeModalExchange()"
                         class="__btn bg-gray2/30 text-black">{{__("p2p.close")}}</button>
             </div>
+            <p class="text-red" id="error"></p>
         </form>
     </section>
 
@@ -492,13 +499,41 @@
     <script>
         const select2 = new ItcCustomSelect(document.getElementById('select-2'));
         const select3 = new ItcCustomSelect(document.getElementById('select-3'));
-        @if(Auth::user() &&  Auth::user()->open_deal)
-        let step = {{$open_order->status}};
+        step = 1;
+        type = '{{$type}}';
+        const error = document.getElementById('error');
 
-        @else
-        let step = 1;
+        function getData() {
+            axios.get('{{route('transaction.open')}}')
+                .then(function (response) {
+                    let data = response.data;
+                    if (data.open) {
+                        step = data.transaction.status
+                        if (step == 5 || step == 6) {
+                            changeStatusTransaction(step)
+                            return
+                        }
+                        showModalExchange("", 100, data.order.id, data.transaction.status)
 
-        @endif
+                        updateData(data.order.id)
+
+                        $('#amount').val(data.transaction.amount)
+
+                        if (step == 4 && data.deposit == null) {
+                            step = 3
+                            changeStatusTransaction(3)
+
+                        }
+
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        getData()
+        let audio = false;
         function updateData(order_id) {
             axios.get('/order/get/' + order_id)
                 .then(function (response) {
@@ -514,8 +549,19 @@
                         (el) => {
                             el.value = order.status;
                             document.getElementById('status').value = order.status;
-                            step = order.status;
-                            changeStatusTransaction(order.status)
+                            showStep(step);
+                            if (order.status !== null) {
+                                step = order.status;
+                                if(!audio){
+                                    if(step == 5){
+                                        changeStatusTransaction(5)
+                                        playSound('/assets/kassa.mp3')
+                                        updateBalance();
+                                        audio = true
+                                    }
+                                }
+                            }
+
                         }
                     );
 
@@ -566,6 +612,7 @@
                             el.value = order.сredentials;
                         }
                     );
+
                     // document.getElementById('commission').value = order.commission;
                 })
                 .catch(function (error) {
@@ -580,7 +627,6 @@
 
 
         function createTransaction(step) {
-            console.log('При создани' + step)
             axios.post('/transaction/create', {
                 order_id: document.getElementById('order_id').value,
                 amount: document.getElementsByName('amount')[0].value,
@@ -589,6 +635,7 @@
                 .then(function (response) {
                     const transaction_id = document.getElementById('transaction_id');
                     transaction_id.value = response.data.id;
+                    this.step = step;
                     showStep(step);
                 })
                 .catch(function (error) {
@@ -604,10 +651,14 @@
                 status: step,
             })
                 .then(function (response) {
+                    this.step = step;
                     showStep(step);
+
+
 
                 })
                 .catch(function (error) {
+                    error.innerHTML = '';
                     console.log(error);
                 });
         }
@@ -619,6 +670,7 @@
 
         function showStep(step) {
             hiddenAllStep();
+            error.innerHTML = '';
             if (step == 1) {
                 document.getElementById('infoExchange').classList.remove('hidden');
             } else if (step == 2) {
@@ -633,29 +685,37 @@
                 document.getElementById('errorExchange').classList.remove('hidden');
             }
         }
-
+        function playSound(url) {
+            const audio = new Audio(url);
+            audio.play().catch(error => {
+                console.error('Ошибка при воспроизведении звука:', error);
+            });
+        }
         nextStep.forEach((el) => {
             el.addEventListener('click', () => {
                 step++;
                 console.log(step)
-
                 const status = document.getElementById('status');
                 status.value = step;
                 el.innerHTML = `<div class="bn-spinner__nezha"><div class="nezha-line" style="animation-delay: 50ms;"></div><div class="nezha-line" style="animation-delay: 100ms;"></div><div class="nezha-line" style="animation-delay: 150ms;"></div><div class="nezha-line" style="animation-delay: 200ms;"></div></div>`;
-                @if($type == 'crypto')
-                if (step == 1) {
-                    createTransaction(4);
-                    setTimeout(() => {
-                        changeStatusTransaction(5)
-                    }, 5000)
+                if (type == 'crypto') {
+                    if (step == 2) {
+                        createTransaction(4);
+                        setTimeout(() => {
+                            changeStatusTransaction(5)
+                            updateBalance();
+                            playSound('/assets/kassa.mp3')
+                        }, 5000)
+                    }
+                } else if (type == 'fiat_crypto' || type == 'crypto_fiat') {
+                    if (step == 2) {
+                        createTransaction(2);
+                    } else {
+                        changeStatusTransaction(step);
+                    }
+
+
                 }
-                @elseif($type == 'fiat_crypto' || $type == 'crypto_fiat')
-                if (step == 1) {
-                    createTransaction(2);
-                } else {
-                    changeStatusTransaction(step);
-                }
-                @endif
                 updateData(document.getElementById('order_id').value)
 
                 el.innerHTML = `Next`;
@@ -668,6 +728,51 @@
             window.location.href = '/p2p/' + select2.value + '/' + select3.value;
         });
 
+        function updateBalance() {
+            axios.get('{{route('balance.get')}}')
+                .then(function (response) {
+                    let balance = response.data;
+                    const balance_el = document.getElementById('balance_show');
+                    animateNumber('balance_show', balance / 3, balance, 3000);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        function animateNumber(elementId, start, end, duration) {
+            const element = document.getElementById(elementId);
+            if (!element) {
+                console.error('Element not found with ID:', elementId);
+                return;
+            }
+
+            let startTime = null;
+
+            function updateNumber(currentTime) {
+                if (!startTime) {
+                    startTime = currentTime;
+                }
+
+                const elapsedTime = currentTime - startTime;
+                const fraction = elapsedTime / duration;
+
+                if (fraction < 1) {
+                    let currentNumber = start + (end - start) * easeInOutQuad(fraction);
+                    element.textContent = Math.round(currentNumber);
+                    requestAnimationFrame(updateNumber);
+                } else {
+                    element.textContent = end;
+                }
+            }
+
+            function easeInOutQuad(t) {
+                return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            }
+
+            requestAnimationFrame(updateNumber);
+        }
+
 
         function selectProcentBalance(procent) {
             let balance = document.getElementById('balance').value;
@@ -676,21 +781,20 @@
         }
 
 
-        @if(Auth::user() &&  Auth::user()->open_deal)
-        showModalExchange("", 100, {{$open_order->order_id }}, {{$open_order->status}})
-        changeStatusTransaction({{$open_order->status}})
-        @if($type === 'crypto' && $open_order->status == 4)
-        changeStatusTransaction(5)
-        @endif
-        const elements = document.querySelectorAll('.close');
-        const elements_modal = document.querySelectorAll('.close_modal');
-        elements_modal.forEach((el) => {
-            el.removeAttribute('onclick')
-        });
-        elements.forEach((el) => {
-            el.classList.add('hidden');
-        });
-        @endif
+        {{--        @if(Auth::user() &&  Auth::user()->open_deal)--}}
+
+        {{--        @if($type === 'crypto' && $open_order->status == 4)--}}
+        {{--        changeStatusTransaction(5)--}}
+        {{--        @endif--}}
+        {{--        const elements = document.querySelectorAll('.close');--}}
+        {{--        const elements_modal = document.querySelectorAll('.close_modal');--}}
+        {{--        elements_modal.forEach((el) => {--}}
+        {{--            el.removeAttribute('onclick')--}}
+        {{--        });--}}
+        {{--        elements.forEach((el) => {--}}
+        {{--            el.classList.add('hidden');--}}
+        {{--        });--}}
+        {{--        @endif--}}
 
 
         const receipt = document.getElementById('receipt')
@@ -704,7 +808,7 @@
             e.preventDefault()
             const formData = new FormData(TradeForm)
             formData.append('currency', {{$cur_from['id']}})
-            formData.append('amount', document.getElementById('amount_el').value)
+            formData.append('amount', document.getElementById('amount').value ? document.getElementById('amount').value : document.getElementsByName('amount')[0].value)
             formData.append('transaction_id', document.getElementById('transaction_id').value)
             axios.post('/deposit/create', formData)
                 .then(function (response) {
@@ -718,5 +822,18 @@
             updateData(document.getElementById('order_id').value)
         }, 10000)
 
+        function createDeposit() {
+            const formData = new FormData(TradeForm)
+            formData.append('currency', {{$cur_from['id']}})
+            formData.append('amount', document.getElementById('amount').value)
+            formData.append('transaction_id', document.getElementById('transaction_id').value)
+            axios.post('/deposit/create', formData)
+                .then(function (response) {
+                    changeStatusTransaction(4)
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
     </script>
 @endsection

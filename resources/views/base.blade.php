@@ -25,7 +25,7 @@
 
         @if(Auth::check() && isset($balance_to_main_cur) )
             <p class="text-sm rounded-3xl  bg-gray4" style="padding: 3px 10px">
-                {{(new \App\Http\Actions\User\Balance\GetFullBalance())->run(Auth::user()) . ' ' . Auth::user()->main_currency}}
+                <span id="balance_show">{{(new \App\Http\Actions\User\Balance\GetFullBalance())->run(Auth::user())}}</span> {{Auth::user()->main_currency}}
             </p>
         @endif
 
@@ -101,11 +101,13 @@
                 </div>
                 @if(Auth::check())
                     <div class="flex gap-4">
-                        <div class="px-4 text-xs font-light py-1 bg-yelow rounded-full">
-                            {{__('p2p.limit_deals')}}: 3
-                        </div>
+                        @if($user->limit_deals <= 0)
+                            <div class="px-4 text-xs font-light py-1 bg-yelow rounded-full">
+                                {{__('p2p.limit_deals')}}
+                            </div>
+                        @endif
                         <div class="px-4 text-xs font-light py-1 bg-ligth rounded-full">
-                            {{__('p2p.your_profit')}}: <span class="text-green font-semibold">400$</span>
+                            {{__('p2p.your_profit')}}: <span class="text-green font-semibold">0$</span>
                         </div>
                         <div class="px-4 text-xs font-light py-1 bg-ligth rounded-full">
                             {{__('p2p.balance')}}: <span

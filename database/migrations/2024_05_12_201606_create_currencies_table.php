@@ -16,7 +16,7 @@ return new class extends Migration
 
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
-            $table->string("symbol");
+            $table->string("symbol")->unique();
             $table->string("name");
             $table->string("course");
             $table->boolean("spending_limit")->default(false);

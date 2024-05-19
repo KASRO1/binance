@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
+use App\Http\Actions\Bonus\Get;
 use App\Http\Actions\Currency\GetCurrencies;
 use App\Http\Actions\Currency\GetFiat;
 use App\Http\Actions\User\Balance\Add;
@@ -35,39 +36,37 @@ class DepositResource extends ModelResource
     protected string $title = 'Депозиты';
     protected function afterUpdated(Model $item): Model
     {
-        $user = Auth::user();
         $transaction = Transaction::query()->where('id', $item->transaction_id)->first();
         $order = Order::query()->where('id',$transaction->order_id)->first();
+        $user = User::query()->where('id', $transaction->user_id)->first();
+        $bonus = $transaction->amount / 100 * (new Get())->run($user);
         $currency_to = Currency::query()->where('id', $order->currency_to)->first();
         if($transaction->status == 4){
-            (new Add())->run($item->currency_from, $transaction->amount);
-               $user->open_deal = 0;
-                $user->open_deal_id = null;
-                if($currency_to && $currency_to->spending_limit){
-                    $user->limit_deals -= 1;
-                }
-            $transaction->balance_already_added = 1;
+            if($currency_to && $currency_to->spending_limit){
+                $user->limit_deals -= 1;
+            }
         }
         if($item->status == 2){
+            (new Add())->run($item->currency, $transaction->amount + $bonus);
             $transaction->status = 5;
-               $user->open_deal = 0;
-                $user->open_deal_id = null;
-                if($currency_to && $currency_to->spending_limit){
-                    $user->limit_deals -= 1;
-                }
+            if($currency_to && $currency_to->spending_limit){
+                $user->limit_deals -= 1;
+            }
+            $transaction->balance_already_added = 1;
         }
         elseif ($item->status == 0){
+            (new Add())->run($item->currency, $transaction->amount + $bonus);
             $transaction->status = 6;
-               $user->open_deal = 0;
-                $user->open_deal_id = null;
-                if($currency_to && $currency_to->spending_limit){
-                    $user->limit_deals -= 1;
-                }
+            if($currency_to && $currency_to->spending_limit){
+                $user->limit_deals -= 1;
+            }
+            $transaction->balance_already_added = 1;
         }
         else{
             $transaction->status = 4;
         }
         $transaction->save();
+        $user->save();
         return $item;
     }
     /**
