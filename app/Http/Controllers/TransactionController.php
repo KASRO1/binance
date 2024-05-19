@@ -89,7 +89,7 @@ class TransactionController extends Controller
                 $requiredDeposit = $firstDepositAmount * 2 - count($deposits);
                 $currency = $firstDeposit->currency;
                 $currency = Currency::query()->where('id', $currency)->first()->symbol;
-                return __('text_error_limit1') . " {$requiredDeposit} {$currency} " . __('text_error_limit2');
+                return 'Fund your account with' . " {$requiredDeposit} {$currency} " . 'to trade in that direction';
             }
             $user->save();
         } elseif ($status == 1) {
