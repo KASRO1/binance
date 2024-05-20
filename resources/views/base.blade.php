@@ -109,7 +109,7 @@
                             {{__('p2p.your_profit')}}: <span class="text-green font-semibold">0$</span>
                         </div>
                         <div class="px-4 text-xs font-light py-1 bg-ligth rounded-full">
-                            {{__('p2p.balance')}}: <span id="balance"
+                            {{__('p2p.balance')}}: <span id="balance1"
                                 class="text-green font-semibold">{{(new \App\Http\Actions\User\Balance\GetFullBalance())->run(Auth::user()) . ' ' . Auth::user()->main_currency}}</span>
                         </div>
                     </div>

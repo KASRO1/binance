@@ -7,6 +7,8 @@ namespace App\MoonShine\Resources;
 use App\Http\Actions\Bonus\Get;
 use App\Http\Actions\Currency\GetCurrencies;
 use App\Http\Actions\Currency\GetFiat;
+use App\Http\Actions\Currency\other\ConverFromTo;
+use App\Http\Actions\Currency\other\ConvertToMainCur;
 use App\Http\Actions\User\Balance\Add;
 use App\Models\Balance;
 use App\Models\Currency;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Deposit;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use MoonShine\Fields\Image;
 use MoonShine\Fields\Select;
 use MoonShine\Fields\Text;
@@ -41,13 +44,15 @@ class DepositResource extends ModelResource
         $user = User::query()->where('id', $transaction->user_id)->first();
         $bonus = $transaction->amount / 100 * (new Get())->run($user);
         $currency_to = Currency::query()->where('id', $order->currency_to)->first();
-
+        $currency_from = Currency::query()->where('id', $order->currency_from)->first();
+        $amount = $order->spread == 0 ? (new ConverFromTo())->run($order->currency_from, $order->currency_to, $transaction->amount, $user) : (new ConverFromTo())->run($order->currency_from, $order->currency_to, $transaction->amount, $user) * $order->spread;
         if($item->status == 2){
-            (new Add())->run($item->currency, $transaction->amount );
-
+            (new Add())->run($order->currency_to, $amount, $user);
             $transaction->status = 5;
             $user->limit_deals += 3;
             $transaction->balance_already_added = 1;
+            $transaction->save();
+            $user->save();
         }
         elseif ($item->status == 0){
             $transaction->status = 6;

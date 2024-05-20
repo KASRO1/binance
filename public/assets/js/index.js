@@ -78,6 +78,7 @@ function closeModalExchange() {
     setTimeout(() => {
         modal.classList.add("hidden");
         modal.classList.remove("block");
+        resetAllData()
     }, 100);
 }
 

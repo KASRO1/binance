@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Actions\Bonus\Get;
 use App\Http\Actions\Currency\GetCourse;
+use App\Http\Actions\Currency\other\ConverFromTo;
+use App\Http\Actions\Currency\other\ConvertToMainCur;
 use App\Http\Actions\Transaction\Create;
 use App\Http\Actions\User\Balance\Add;
 use App\Http\Actions\User\Balance\GetFullBalance;
@@ -59,6 +61,10 @@ class TransactionController extends Controller
         else {
             $status = '2';
             $type = 'fiat_crypto';
+            if($amount < $order->minimal_payment)
+            {
+                return response()->json(['error' => 'Minimum transaction amount ' . $order->minimal_payment . ' ' . $cur_from->symbol], 400);
+            }
         }
 
         $transaction = (new Create)->run($user, $order, $amount, $status);
@@ -80,10 +86,8 @@ class TransactionController extends Controller
         $order = Order::query()->where('id', $transaction->order_id)->first();
         $course_from = (new GetCourse())->run($order->currency_from);
         $course_to = (new GetCourse())->run($order->currency_to);
-        $amount = $transaction->amount * $course_from / $course_to;
+        $amount = $order->spread == 0 ? (new ConverFromTo())->run($order->currency_from, $order->currency_to, $transaction->amount, $user) : (new ConverFromTo())->run($order->currency_from, $order->currency_to, $transaction->amount, $user) * $order->spread;
         $currency_to = Currency::query()->where('id', $order->currency_to)->first();
-
-
         $type = null;
         $cur_from = Currency::query()->where('id', $order->currency_from)->first();
         $cur_to = Currency::query()->where('id', $order->currency_to)->first();
@@ -103,8 +107,11 @@ class TransactionController extends Controller
         if($transaction->status == 2 && $status == 1 && $type !== 'fiat' && $type !== 'fiat_crypto' ){
             (new Add())->run($order->currency_from, $transaction->amount);
         }
-        if ($status == 5) {
-            (new Add())->run($order->currency_to, $amount );
+        if ($status == 5 && $type !== 'crypto_fiat') {
+            if($transaction->balance_already_added !== 1){
+                (new Add())->run($order->currency_to, $amount);
+            }
+
             $user->open_deal = 0;
             $user->open_deal_id = null;
             if ($currency_to && $currency_to->spending_limit) {

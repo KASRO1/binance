@@ -26,7 +26,6 @@ class SystemController extends Controller
 
     public function convert($from, $to, $amount)
     {
-        dd(123);
         $user = auth()->user();
         $main_currency = Currency::query()->where('symbol', $user->main_currency)->first();
         $from = Currency::query()->where('symbol', $from)->first();

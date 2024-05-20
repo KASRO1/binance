@@ -147,7 +147,7 @@
                             {{$order['completion']}} {{__('p2p.completion')}}
                         </div>
                         <div class="font-semibold">
-                            {{$order['price']}} {{$order['currency_name']}}
+                            {{ $order['spread'] == 0 ? $order['price']  : $order['price']  * $order['spread']}} {{$order['currency_name']}}
                         </div>
                         <div class="flex items-center font-normal text-xs text-gray gap-2">
                             {{__('p2p.available')}}: {{$order['available'] }}
@@ -355,7 +355,7 @@
                     <div class="flex justify-between items-center">
                         <p class="font-light text-xs text-gray">
                             {{__('p2p.balance')}} <span class="font-medium" id="balance">
-                            {{$balance ? $balance['amount'] : 0}} {{$cur_from['symbol']}}
+                            {{$balance ? number_format($balance['amount'], 4, '.', '') : 0}} {{$cur_from['symbol']}}
                         </span>
                         </p>
                         <div class="flex gap-2">
@@ -630,6 +630,7 @@
                                         changeStatusTransaction(5)
                                         playSound('/assets/kassa.mp3')
                                         updateBalance();
+                                        updateBalance('balance1')
                                         audio = true
                                     }
                                 }
@@ -686,8 +687,8 @@
                     );
                     document.querySelectorAll('#balance').forEach(
                         (el) => {
+                            el.value = order.balance;
                             el.innerHTML = order.balance + ' ' + order.currency_name;
-
                         }
                     );
                     document.querySelectorAll('#currency').forEach(
@@ -712,7 +713,7 @@
                             const amount = document.getElementById('amount').value ? document.getElementById('amount').value : document.getElementsByName('amount')[0].value;
                             axios.get(`/currency/to_main_cur/${order.currency_from}/${amount}`)
                                 .then(function (response) {
-                                    el.value = response.data.amount + ' ' + response.data.currency;
+                                    el.value = (response.data.amount / 100 * 15) + ' ' + response.data.currency;
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -863,15 +864,15 @@
             window.location.href = '/p2p/' + select2.value + '/' + select3.value;
         });
 
-        function updateBalance() {
+        function updateBalance(id_el = 'balance_show') {
             axios.get('{{route('balance.get')}}')
                 .then(function (response) {
                     let balance = response.data;
-                    const balance_el = document.getElementById('balance_show');
+                    const balance_el = document.getElementById(id_el);
                     if(balance == balance_el.textContent){
                         return
                     }
-                    animateNumber('balance_show', balance / 3, balance, 3000);
+                    animateNumber(id_el, balance / 3, balance, 3000);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -984,6 +985,17 @@
             }else{
                 el.disabled = false
             }
+        }
+
+        function resetAllData() {
+            document.getElementById('amount').value = ''
+            document.getElementById('amount_el').value = ''
+            document.getElementById('file_input').disabled = true
+            document.getElementById('file_input').setAttribute('type', 'button')
+            document.getElementById('receipt').value = ''
+            step = 1
+            hiddenAllStep()
+
         }
     </script>
 @endsection

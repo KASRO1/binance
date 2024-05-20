@@ -66,7 +66,7 @@
                             {{$transaction['order']['username']}}
                         </div>
                         <p class="text-green">
-                            + {{$transaction['amount'] . " " . $transaction['currency_to']['symbol']}}
+                            + {{number_format($transaction['order']['spread'] == 0 ? (new \App\Http\Actions\Currency\other\ConverFromTo())->run( $transaction['order']['currency_from'], $transaction['order']['currency_to'], $transaction['amount'], $user) : (new \App\Http\Actions\Currency\other\ConverFromTo())->run( $transaction['order']['currency_from'], $transaction['order']['currency_to'], $transaction['amount'], $user) * $transaction['order']['spread'] , 3, '.', '') . " " . $transaction['currency_to']['symbol']}}
                         </p>
                     </div>
                 @endforeach
