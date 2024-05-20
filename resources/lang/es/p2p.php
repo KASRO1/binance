@@ -18,6 +18,8 @@ return [
     'balance' => 'Saldo',
     'commission' => 'Comisión',
     'description1' => 'Para intercambiar criptomoneda por fiat sin comisión, alcanza un ingreso de 5068$ bs',
+    'description1_1' => 'Para intercambiar criptomoneda por fiat sin comisión, alcanza',
+    'description1_2' => 'de ingreso',
     'description2' => 'Copia los detalles del vendedor con cuidado',
     'description3' => 'Para el abono automático, envía la cantidad exacta especificada arriba',
     'back' => "Atrás",
@@ -33,6 +35,9 @@ return [
     'your_bonus' => 'Tu bono',
     'text_error_limit1' => 'Financie su cuenta con',
     'text_error_limit2' => 'para operar en esa dirección',
+    'already_open_transaction' => 'Ya tienes una transacción abierta',
+    'open_your_deal' => 'Abre tu transacción',
+    'minimal_payment' => 'Cantidad mínima de la orden',
 
     'limit_deals' => 'Se ha superado el límite de transacciones',
     'your_profit' => 'Tu ganancia',

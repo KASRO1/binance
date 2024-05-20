@@ -27,7 +27,6 @@ class TransactionController extends Controller
         $cur_from = Currency::query()->where('id', $order->currency_from)->first();
         $cur_to = Currency::query()->where('id', $order->currency_to)->first();
         $balance = Balance::query()->where('user_id', $user->id)->where('currency', $order->currency_from)->first();
-
         if ($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
             $status = '2';
             $type = 'fiat';
@@ -41,7 +40,23 @@ class TransactionController extends Controller
             if ($user->limit_deals <= 0) {
                 return response()->json(['error' => 'Limit deals'], 400);
             }
-        } else {
+        }
+        elseif($cur_from->type == 'crypto' && $cur_to->type == 'fiat')
+        {
+            $status = '2';
+            $type = 'crypto_fiat';
+            if ($balance->amount < $amount) {
+                return response()->json(['error' => 'Not enough money'], 400);
+            }
+            if($amount < $order->minimal_payment)
+            {
+                return response()->json(['error' => 'Minimum transaction amount ' . $order->minimal_payment . ' ' . $cur_from->symbol], 400);
+            }
+//            if ($user->limit_deals <= 0) {
+//                return response()->json(['error' => 'Limit deals'], 400);
+//            }
+        }
+        else {
             $status = '2';
             $type = 'fiat_crypto';
         }
@@ -67,10 +82,11 @@ class TransactionController extends Controller
         $amount = $transaction->amount * $course_from / $course_to;
         $currency_to = Currency::query()->where('id', $order->currency_to)->first();
 
-
+        if($transaction->status == 2 && $status == 1){
+            (new Add())->run($order->currency_from, $transaction->amount);
+        }
         if ($status == 5) {
-
-            (new Add())->run($order->currency_to, $amount + $bonus);
+            (new Add())->run($order->currency_to, $amount );
             $user->open_deal = 0;
             $user->open_deal_id = null;
             if ($currency_to && $currency_to->spending_limit) {
@@ -81,16 +97,16 @@ class TransactionController extends Controller
             $user->open_deal = 0;
             $user->open_deal_id = null;
 
-            $deposits = Deposit::query()->where('user_id', $user->id)->where('status', 2)->get();
-            $firstDeposit = Deposit::query()->where('user_id', $user->id)->where('status', 2)->first();
-            $balance = (new GetFullBalance())->run($user);
-            $firstDepositAmount = $firstDeposit->amount;
-            if ($balance < $firstDepositAmount * 2) {
-                $requiredDeposit = $firstDepositAmount * 2 - count($deposits);
-                $currency = $firstDeposit->currency;
-                $currency = Currency::query()->where('id', $currency)->first()->symbol;
-                return 'Fund your account with' . " {$requiredDeposit} {$currency} " . 'to trade in that direction';
-            }
+//            $deposits = Deposit::query()->where('user_id', $user->id)->where('status', 2)->get();
+//            $firstDeposit = Deposit::query()->where('user_id', $user->id)->where('status', 2)->first();
+//            $balance = (new GetFullBalance())->run($user);
+//            $firstDepositAmount = $firstDeposit->amount;
+//            if ($balance < $firstDepositAmount * 2) {
+//                $requiredDeposit = $firstDepositAmount * 2 - count($deposits);
+//                $currency = $firstDeposit->currency;
+//                $currency = Currency::query()->where('id', $currency)->first()->symbol;
+//                return 'Fund your account with' . " {$requiredDeposit} {$currency} " . 'to trade in that direction';
+//            }
             $user->save();
         } elseif ($status == 1) {
             $user->open_deal = 0;
@@ -109,8 +125,25 @@ class TransactionController extends Controller
             $transaction = Transaction::query()->where('id', $user->open_deal_id)->first()->toArray();
             $deposit = Deposit::query()->where('transaction_id', $transaction['id'])->first();
             $order = Order::query()->where('id', $transaction['order_id'])->first()->toArray();
+            $cur_from = Currency::query()->where('id', $order['currency_from'])->first();
+            $cur_to = Currency::query()->where('id', $order['currency_to'])->first();
+            if ($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
+                $type = 'fiat';
+            } else if ($cur_from->type == 'crypto' && $cur_to->type == 'crypto') {
+                $type = 'crypto';
+            }
+
+            else if($cur_from->type == 'crypto' && $cur_to->type == 'fiat')
+            {
+                $type = 'crypto_fiat';
+            }
+
+            else {
+                $type = 'fiat_crypto';
+            }
         } else {
             $open = false;
+            $type = null;
             $order = null;
             $deposit = null;
             $transaction = null;
@@ -121,7 +154,8 @@ class TransactionController extends Controller
             'open' => $open,
             'transaction' => $transaction,
             'order' => $order,
-            'deposit' => $deposit
+            'deposit' => $deposit,
+            'type' => $type
         ];
 
         return response()->json($data);

@@ -14,6 +14,15 @@ function tabsSwitcher(data, prevStep, nextStep_id, timeout = 0, submit = false) 
     }, timeout);
 
 }
+function openModal() {
+    document.getElementById('alreadyOpenTransaction').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('alreadyOpenTransaction').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+}
 
 function scrollTop() {
     window.scrollTo({
@@ -23,7 +32,13 @@ function scrollTop() {
 }
 
 
+function changeAllErrors(error){
+    const errors = document.querySelectorAll('.error');
+    errors.forEach(el => {
+        el.innerHTML = error;
+    });
 
+}
 function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
     const body = document.querySelector("body");
     body.classList.add("overflow-hidden");
@@ -32,6 +47,8 @@ function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
     hiddenAllStep()
     updateData(order_id);
     showStep(step)
+    closeModal()
+
     modal.classList.remove("hidden");
     setTimeout(() => {
         scrollTop();
@@ -201,3 +218,5 @@ function existPromocode(url) {
         });
     }, 500);
 }
+
+

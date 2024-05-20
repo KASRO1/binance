@@ -16,4 +16,6 @@ class Currency extends Model
         'spending_limit',
         'type',
     ];
+
+
 }

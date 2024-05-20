@@ -9,11 +9,10 @@
     <link rel="stylesheet" href="/assets/css/itc-custom-select.css"/>
     <script src="/assets/js/itc-custom-select.js"></script>
     <script src="/assets/js/jquery-3.7.1.min.js"></script>
-
     <script src="/assets/js/axios.min.js"></script>
 </head>
 
-<body class="h-full flex justify-between flex-col container m-auto">
+<body  class="h-full flex justify-between flex-col container m-auto">
 <header onclick="closeModalExchange()" class="close_modal px-6 flex py-3 pt-7 justify-between">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5120 1024" class="h-6" fill="#F0B90B">
         <path
@@ -42,7 +41,7 @@
     </div>
 
 </header>
-<main class="py-2 px-6 flex-1 flex gap-10 flex-col">
+<main class="relative py-2 px-6 flex-1 flex gap-10 flex-col">
     @yield('content')
 </main>
 <footer class="px-6 bottom-0 w-full border-t justify-center text-center flex flex-col border-gray3 py-3">
@@ -53,7 +52,7 @@
         Terms of Use
     </p>
 </footer>
-
+<div id="overlay"></div>
 <svg aria-name="common" xmlns="http://www.w3.org/2000/svg"
      style="position: absolute; width: 0px; height: 0px; overflow: hidden;" aria-hidden="true">
     <symbol viewBox="0 0 24 24" id="account-f">
@@ -101,7 +100,7 @@
                 </div>
                 @if(Auth::check())
                     <div class="flex gap-4">
-                        @if($user->limit_deals <= 0)
+                        @if(\Illuminate\Support\Facades\Auth::user()->limit_deals <= 0)
                             <div class="px-4 text-xs font-light py-1 bg-yelow rounded-full">
                                 {{__('p2p.limit_deals')}}
                             </div>

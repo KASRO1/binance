@@ -20,8 +20,8 @@ class Order extends Model
         'currency_from',
         'currency_to',
         'limit',
-        'commission',
         'bestPrice',
+        'minimal_payment',
         'AutoMode'
     ];
 }

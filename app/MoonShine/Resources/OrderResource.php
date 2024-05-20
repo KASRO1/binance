@@ -27,6 +27,18 @@ class OrderResource extends ModelResource
 
     protected string $title = 'Предложения P2P';
 
+
+    public function search(): array
+    {
+        return ['сredentials', 'username'];
+    }
+    public function filters(): array
+    {
+        return [
+            Select::make('Валюта от', 'currency_from')->options((new GetCurrencies())->run('options'))->sortable(),
+            Select::make('Валюта в', 'currency_to')->options((new GetCurrencies())->run('options'))->sortable(),
+        ];
+    }
     /**
      * @return list<MoonShineComponent|Field>
      */
@@ -42,7 +54,7 @@ class OrderResource extends ModelResource
                 Text::make('Доступные лимиты', 'limit')->sortable(),
                 Image::make('QR', 'qr_code')->sortable(),
                 Text::make('Отзывов', 'feedback')->sortable(),
-                Text::make('Комиссия', 'commission')->sortable(),
+                Text::make('Минимальная сумма сделки', 'minimal_payment')->sortable(),
                 Text::make('Платежные реквизиты', 'сredentials')->sortable(),
                 Select::make('Валюта от', 'currency_from')->options((new GetCurrencies())->run('options'))->sortable(),
                 Select::make('Валюта в', 'currency_to')->options((new GetCurrencies())->run('options'))->sortable(),

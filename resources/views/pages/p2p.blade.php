@@ -3,6 +3,7 @@
 @section('title', __('p2p.title'))
 @section('content')
 
+
     <div class="py-2 px-6 flex-1 flex gap-10 flex-col">
         <div class="flex pt -5 flex-col gap-6">
             <h1 class="text-2xl">
@@ -165,11 +166,20 @@
 
                             @endif
                             @if(Auth::check())
-                                <div class="">
-                                    <button onclick="showModalExchange(this, 100, {{$order['id']}})"
-                                            class="bg-yelow text-black text-xs rounded-md px-4 py-[2px]">{{__('p2p.exchange')}}
-                                    </button>
-                                </div>
+                                @if($user->open_deal)
+                                    <div class="">
+                                        <button
+                                            onclick="openModal()"
+                                            class="button_show_modal bg-yelow text-black text-xs rounded-md px-4 py-[2px]">{{__('p2p.exchange')}}
+                                        </button>
+                                    </div>
+                                @else
+                                    <div class="">
+                                        <button onclick="showModalExchange(this, 100, {{$order['id']}})"
+                                                class="button_show_modal bg-yelow text-black text-xs rounded-md px-4 py-[2px]">{{__('p2p.exchange')}}
+                                        </button>
+                                    </div>
+                                @endif
                             @endif
 
                         </div>
@@ -207,6 +217,46 @@
             </div>
         </div>
     </div>
+    <section id="alreadyOpenTransaction" style=" z-index: 10000; "
+             class="absolute  w-full justify-center items-center ">
+        <div style="background-color: rgb(30, 35, 41); max-width: 300px"
+             class="rounded-3xl border border-gray3 pb-5  flex justify-center items-center w-full pt-5 px-5 ">
+            <div class="flex-col justify-center items-center flex gap-3">
+
+                <div style="width: 100px; height: 100px">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none" class="css-zlj1zk">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                              d="M48 88c22.091 0 40-17.909 40-40S70.091 8 48 8 8 25.909 8 48s17.909 40 40 40zM33 37.198l10.607 10.497L33 58.19l4.243 4.198 10.606-10.496 10.607 10.496 4.242-4.198-10.606-10.496 10.607-10.497L58.456 33 47.849 43.496 37.243 33 33 37.198z"
+                              fill="url(#general-error_svg__paint0)"></path>
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                              d="M48 19c-16.016 0-29 12.984-29 29s12.984 29 29 29 29-12.984 29-29-12.984-29-29-29zm-4.393 28.695L33 37.199 37.243 33l10.606 10.496L58.456 33l4.242 4.199-10.606 10.496L62.699 58.19l-4.243 4.198-10.607-10.496-10.606 10.496L33 58.191l10.607-10.496z"
+                              fill="url(#general-error_svg__paint1)"></path>
+                        <defs>
+                            <linearGradient id="general-error_svg__paint0" x1="8" y1="48" x2="88" y2="48"
+                                            gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#F84960" stop-opacity="0"></stop>
+                                <stop offset="1" stop-color="#F84960"></stop>
+                            </linearGradient>
+                            <linearGradient id="general-error_svg__paint1" x1="77" y1="48" x2="19" y2="48"
+                                            gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#F84960"></stop>
+                                <stop offset="1" stop-color="#D9304E"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+
+                </div>
+                <h1 class="text-center">
+                    {{__('p2p.already_open_transaction')}}
+                </h1>
+
+                <div class="flex-col w-full flex gap-5">
+                    <button id="openActualModel"   class="__btn hover:bg-yelow2 transition-all bg-yelow w-full ">{{__('p2p.open_your_deal')}}</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
     <section id="modalTrade" class="modalTrade hidden pb-10 pt-5 px-5">
         <form id="TradeForm" class="flex flex-1 h-full flex-col gap-5">
             <input class="hidden" value="" id="order_id">
@@ -268,6 +318,10 @@
                     <p class="text-black" id="available">100.00 USDT</p>
                 </div>
                 <div class="flex font-light text-sm justify-between">
+                    <p class="text-gray">{{__('p2p.minimal_payment')}}</p>
+                    <p class="text-black" id="minimal_payment">100.00 USDT</p>
+                </div>
+                <div class="flex font-light text-sm justify-between">
                     <p class="text-gray">{{__('p2p.positive_feedback')}}</p>
                     <div class="text-black items-center flex gap-1">
                         <div class="text-gray">
@@ -284,14 +338,15 @@
                 <div class="flex font-light text-sm justify-between">
                     <p class="text-gray">{{__('p2p.your_bonus')}}</p>
                     <div class="text-black items-center flex gap-1">
-                        {{(new \App\Http\Actions\Bonus\Get())->run() == 1 ? 0 : (new \App\Http\Actions\Bonus\Get())->run()}} %
+                        {{(new \App\Http\Actions\Bonus\Get())->run() == 1 ? 0 : (new \App\Http\Actions\Bonus\Get())->run()}}
+                        %
                     </div>
                 </div>
                 <p class="font-medium text-black">
                     {{__("p2p.payment_details")}}
                 </p>
                 {{--                <input name="password" placeholder="Your creditals" type="text" class="__input text-black mb-3" />--}}
-                @if($type === 'crypto')
+                @if($type === 'crypto' || $type === 'crypto_fiat')
                     <div class="flex justify-between items-center">
                         <p class="font-light text-xs text-gray">
                             {{__('p2p.balance')}} <span class="font-medium" id="balance">
@@ -314,8 +369,9 @@
                         </div>
                     </div>
                 @endif
-                <input name="amount" id="amount_el" placeholder="Amount" type="text" class="__input text-black mb-3"/>
-                <button type="button" class="__btn bg-yelow nextStep">{{__('p2p.exchange')}}</button>
+                <p class="text-red error"></p>
+                <input oninput="inactiv_is_still_empty('btn_step2', this)" name="amount" id="amount_el" placeholder="Amount" type="text" class="__input text-black mb-3"/>
+                <button disabled id="btn_step2" type="button" class="__btn bg-yelow nextStep">{{__('p2p.exchange')}}</button>
                 <button type="button" onclick="closeModalExchange()"
                         class="__btn bg-red text-white">{{__('p2p.close')}}</button>
             </div>
@@ -383,18 +439,18 @@
                     <input id="credentials" disabled name="password" value="92984829284" type="text"
                            class="__input text-black mb-3"/>
                 </div>
-                @if($type === 'crypto_fiat')
-                    <div class="flex flex-col gap-1">
-                        <p class="text-sm font-normal text-gray">
-                            {{__('p2p.commission')}}
-                        </p>
-                        <input id="commission" disabled name="password" value="4102$" type="text"
-                               class="__input text-black mb-3"/>
-                    </div>
-                    <p class="text-xs font-normal text-gray">
+                <div id="commission_div" class="hidden flex flex-col gap-1">
+                    <p class="text-sm font-normal text-gray">
+                        {{__('p2p.commission')}}
+                    </p>
+                    <input id="commission" disabled name="password"
+                           value="{{$open_order ? $open_order->amount / 100 * 15 : null}}" type="text"
+                           class="__input text-black mb-3"/>
+                    <p id="description1" class="text-xs font-normal text-gray">
                         {{__('p2p.description1')}}
                     </p>
-                @endif
+                </div>
+
                 <p class="text-xs font-normal text-gray">
                     {{__('p2p.description2')}}
                 </p>
@@ -410,10 +466,10 @@
                         {{__('p2p.description3')}}
                     </p>
                 </div>
-
+                <p class="text-red error"></p>
                 <button type="button" class="__btn bg-yelow nextStep">{{__('p2p.i_paid')}}</button>
                 <button type="button" onclick="backStep(1)"
-                        class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
+                        class="__btn bg-gray2/30 text-black mb-10">{{__("p2p.back")}}</button>
             </div>
             <div id="documentUpload" class="flex hidden flex-col gap-3">
                 <div class="flex justify-center items-center h-96">
@@ -430,6 +486,7 @@
                 <p class="text-sm font-normal text-gray">
                     {{__('p2p.upload_receipt')}}
                 </p>
+                <p class="text-red error"></p>
                 <label class="__btn flex justify-center cursor-pointer items-center bg-green text-white" for="receipt">
                     {{__('p2p.select_image')}}
                 </label>
@@ -438,7 +495,7 @@
                 <button type="submit" disabled id="file_input"
                         class="__btn bg-yelow nextStep">{{__('p2p.next')}}</button>
                 <button type="button" onclick="backStep(2)"
-                        class="__btn bg-gray2/30 text-black">{{__('p2p.back')}}</button>
+                        class="mb-10 __btn bg-gray2/30 text-black">{{__('p2p.back')}}</button>
             </div>
             <div id="loadingExchange" class="hidden flex justify-between h-full flex-col">
                 <div class="flex flex-1 h-full justify-center flex-col gap-3">
@@ -488,7 +545,7 @@
                 <button type="button" onclick="closeModalExchange()"
                         class="__btn bg-gray2/30 text-black">{{__("p2p.close")}}</button>
             </div>
-            <p class="text-red" id="error"></p>
+
         </form>
     </section>
 
@@ -497,28 +554,38 @@
 
 @section("script")
     <script>
+
         const select2 = new ItcCustomSelect(document.getElementById('select-2'));
         const select3 = new ItcCustomSelect(document.getElementById('select-3'));
         step = 1;
         type = '{{$type}}';
-        const error = document.getElementById('error');
+        let open_order = false;
+
 
         function getData() {
             axios.get('{{route('transaction.open')}}')
                 .then(function (response) {
                     let data = response.data;
                     if (data.open) {
+                        open_order = true;
                         step = data.transaction.status
                         if (step == 5 || step == 6) {
                             changeStatusTransaction(step)
                             return
                         }
+                        const openActualModel = document.getElementById('openActualModel')
+                        openActualModel.setAttribute('onclick', `showModalExchange(this, 100, ${data.order.id}, ${data.transaction.status})`)
                         showModalExchange("", 100, data.order.id, data.transaction.status)
 
                         updateData(data.order.id)
 
                         $('#amount').val(data.transaction.amount)
-
+                        type = data.type
+                        console.log(type)
+                        if (type == 'crypto_fiat') {
+                            const commission_div = document.getElementById('commission_div')
+                            commission_div.classList.remove('hidden')
+                        }
                         if (step == 4 && data.deposit == null) {
                             step = 3
                             changeStatusTransaction(3)
@@ -534,6 +601,7 @@
 
         getData()
         let audio = false;
+
         function updateData(order_id) {
             axios.get('/order/get/' + order_id)
                 .then(function (response) {
@@ -549,11 +617,11 @@
                         (el) => {
                             el.value = order.status;
                             document.getElementById('status').value = order.status;
-                            showStep(step);
+                            // showStep(step);
                             if (order.status !== null) {
                                 step = order.status;
-                                if(!audio){
-                                    if(step == 5){
+                                if (!audio) {
+                                    if (step == 5) {
                                         changeStatusTransaction(5)
                                         playSound('/assets/kassa.mp3')
                                         updateBalance();
@@ -596,6 +664,13 @@
 
                         }
                     );
+                    document.querySelectorAll('#minimal_payment').forEach(
+                        (el) => {
+                            el.innerHTML = order.minimal_payment + ' ' + order.currency_name
+                            const description1 = document.getElementById('description1')
+                            description1.innerHTML =  `{{__('p2p.description1_1')}} ${order.minimal_payment * 200} ${order.currency_name} {{__('p2p.description1_2')}}`
+                        }
+                    );
                     document.querySelectorAll('#balance').forEach(
                         (el) => {
                             el.innerHTML = order.balance + ' ' + order.currency_name;
@@ -607,6 +682,13 @@
                             el.src = '/storage/' + order.qr_code;
                         }
                     )
+                    document.querySelectorAll('#commission').forEach(
+                        (el) => {
+                            const amount = document.getElementById('amount').value ? document.getElementById('amount').value : document.getElementsByName('amount')[0].value;
+                            el.value = amount / 100 * 15 + ' ' + order.currency_name;
+
+                        }
+                    );
                     document.querySelectorAll('#credentials').forEach(
                         (el) => {
                             el.value = order.сredentials;
@@ -639,7 +721,8 @@
                     showStep(step);
                 })
                 .catch(function (error) {
-                    console.log(error);
+                    changeAllErrors(error.response.data.error)
+                    this.step = 1;
                 });
         }
 
@@ -653,24 +736,24 @@
                 .then(function (response) {
                     this.step = step;
                     showStep(step);
-
-
+                    updateBalance();
 
                 })
                 .catch(function (error) {
-                    error.innerHTML = '';
-                    console.log(error);
+                    this.step = step - 1;
+                    changeAllErrors(error.response.data.error)
                 });
         }
 
         function backStep(step_func) {
             changeStatusTransaction(step_func)
             step = step_func
+            updateBalance();
         }
 
         function showStep(step) {
             hiddenAllStep();
-            error.innerHTML = '';
+            changeAllErrors('')
             if (step == 1) {
                 document.getElementById('infoExchange').classList.remove('hidden');
             } else if (step == 2) {
@@ -685,16 +768,18 @@
                 document.getElementById('errorExchange').classList.remove('hidden');
             }
         }
+
         function playSound(url) {
             const audio = new Audio(url);
             audio.play().catch(error => {
                 console.error('Ошибка при воспроизведении звука:', error);
             });
         }
+
         nextStep.forEach((el) => {
             el.addEventListener('click', () => {
                 step++;
-                console.log(step)
+
                 const status = document.getElementById('status');
                 status.value = step;
                 el.innerHTML = `<div class="bn-spinner__nezha"><div class="nezha-line" style="animation-delay: 50ms;"></div><div class="nezha-line" style="animation-delay: 100ms;"></div><div class="nezha-line" style="animation-delay: 150ms;"></div><div class="nezha-line" style="animation-delay: 200ms;"></div></div>`;
@@ -703,7 +788,7 @@
                         createTransaction(4);
                         setTimeout(() => {
                             changeStatusTransaction(5)
-                            updateBalance();
+
                             playSound('/assets/kassa.mp3')
                         }, 5000)
                     }
@@ -713,9 +798,14 @@
                     } else {
                         changeStatusTransaction(step);
                     }
+                    if(type == 'crypto_fiat'){
+                        const commission_div = document.getElementById('commission_div')
+                        commission_div.classList.remove('hidden')
+                    }
 
 
                 }
+                updateBalance();
                 updateData(document.getElementById('order_id').value)
 
                 el.innerHTML = `Next`;
@@ -733,6 +823,9 @@
                 .then(function (response) {
                     let balance = response.data;
                     const balance_el = document.getElementById('balance_show');
+                    if(balance == balance_el.textContent){
+                        return
+                    }
                     animateNumber('balance_show', balance / 3, balance, 3000);
                 })
                 .catch(function (error) {
@@ -775,9 +868,12 @@
 
 
         function selectProcentBalance(procent) {
+
             let balance = document.getElementById('balance').value;
             let amount = balance * procent / 100;
             document.getElementsByName('amount')[0].value = amount;
+            const element = document.getElementById('amount_el')
+            inactiv_is_still_empty('btn_step2', element)
         }
 
 
@@ -834,6 +930,15 @@
                 .catch(function (error) {
                     console.log(error);
                 });
+        }
+
+        function inactiv_is_still_empty(el_id_inactive, el_validate){
+            const el = document.getElementById(el_id_inactive)
+            if(el_validate.value === ''){
+                el.disabled = true
+            }else{
+                el.disabled = false
+            }
         }
     </script>
 @endsection

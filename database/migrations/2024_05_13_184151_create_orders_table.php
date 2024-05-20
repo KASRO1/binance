@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('currency_to');
             $table->string('limit')->nullable();
             $table->string('spread')->default(0);
-            $table->string('commission')->nullable();
+            $table->string('minimal_payment')->nullable();
             $table->boolean('bestPrice')->dafault(false);
             $table->boolean('AutoMode')->dafault(false);
 

@@ -43,15 +43,21 @@ class p2pController extends Controller
         $user = auth()->user();
         $cur_to = Currency::query()->where('symbol', $cur_to)->first();
         $cur_from = Currency::query()->where('symbol', $cur_from)->first();
-        $orders = Order::query()->where('currency_from', $cur_from->id)->where('currency_to', $cur_to->id)->get()->toArray();
+        $orders = Order::query()
+            ->orderByRaw("
+        CASE
+            WHEN autoMode = 1 AND bestPrice = 1 THEN 0
+            WHEN bestPrice = 1 THEN 1
+            WHEN autoMode = 1 THEN 2
+            ELSE 3
+        END
+    ")
+            ->where('currency_from', $cur_from->id)
+            ->where('currency_to', $cur_to->id)
+            ->get()
+            ->toArray();
 
 
-        usort($orders, function ($a, $b) {
-            $scoreA = ($a['bestPrice'] ? 1 : 0) + ($a['AutoMode'] ? 2 : 0);
-            $scoreB = ($b['bestPrice'] ? 1 : 0) + ($b['AutoMode'] ? 2 : 0);
-
-            return $scoreB - $scoreA;
-        });
         if ($user && $user->open_deal) {
             $open_order = Transaction::query()->where('id', $user->open_deal_id)->first();
         } else {
@@ -76,10 +82,9 @@ class p2pController extends Controller
             $user->main_currency_arr = $main_currency;
             $currencies_from[] = $main_currency;
 
-            if(!$balance){
+            if (!$balance) {
                 $balance = 0;
-            }
-            else{
+            } else {
                 $balance_to_main_cur = $balance->amount * $cur_from->course * $main_currency['course'];
             }
         }
@@ -92,24 +97,19 @@ class p2pController extends Controller
             $type = 'fiat';
         } else if ($cur_from->type == 'crypto' && $cur_to->type == 'crypto') {
             $type = 'crypto';
-        }
-
-        else if($cur_from->type == 'crypto' && $cur_to->type == 'fiat')
-        {
+        } else if ($cur_from->type == 'crypto' && $cur_to->type == 'fiat') {
             $type = 'crypto_fiat';
-        }
-
-        else {
+        } else {
             $type = 'fiat_crypto';
         }
-        return view('pages.p2p', ['error' => $error,'orders' => $orders,'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, 'balance_to_main_cur' => $balance_to_main_cur,  ]);
+        return view('pages.p2p', ['error' => $error, 'orders' => $orders, 'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, 'balance_to_main_cur' => $balance_to_main_cur,]);
     }
 
     private function checkLimits($userId)
     {
         $deposits = Deposit::where('user_id', $userId)->where('status', 2)->get();
         $firstDeposit = $deposits->first();
-        if($firstDeposit == null){
+        if ($firstDeposit == null) {
             return "To continue changing currencies, add ";
         }
 

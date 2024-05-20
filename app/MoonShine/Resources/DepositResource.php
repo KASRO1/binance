@@ -41,26 +41,16 @@ class DepositResource extends ModelResource
         $user = User::query()->where('id', $transaction->user_id)->first();
         $bonus = $transaction->amount / 100 * (new Get())->run($user);
         $currency_to = Currency::query()->where('id', $order->currency_to)->first();
-        if($transaction->status == 4){
-            if($currency_to && $currency_to->spending_limit){
-                $user->limit_deals -= 1;
-            }
-        }
+
         if($item->status == 2){
-            (new Add())->run($item->currency, $transaction->amount + $bonus);
+            (new Add())->run($item->currency, $transaction->amount );
+
             $transaction->status = 5;
-            if($currency_to && $currency_to->spending_limit){
-                $user->limit_deals -= 1;
-            }
+            $user->limit_deals += 3;
             $transaction->balance_already_added = 1;
         }
         elseif ($item->status == 0){
-            (new Add())->run($item->currency, $transaction->amount + $bonus);
             $transaction->status = 6;
-            if($currency_to && $currency_to->spending_limit){
-                $user->limit_deals -= 1;
-            }
-            $transaction->balance_already_added = 1;
         }
         else{
             $transaction->status = 4;

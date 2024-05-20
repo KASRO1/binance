@@ -22,7 +22,7 @@ class OrderController extends Controller
         $user = Auth::user();
         $order = Order::findOrFail($order_id);
         $currency = Currency::query()->where('id', $order->currency_from)->first();
-        $balance = Balance::query()->where('currency', $currency->id)->first();
+        $balance = Balance::query()->where('currency', $currency->id)->where('user_id', $user->id)->first();
 
         if($balance){
             $balance = $balance->amount;

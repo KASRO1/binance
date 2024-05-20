@@ -65,6 +65,6 @@ Route::group(['middleware' => 'guest'], function () {
 Route::get('/language/{lang}', [SystemController::class, 'setLanguage'])->name('language:lang');
 
 Route::get('/test', function () {
-    dd((new GetCurrencies())->run('options'));
+    $orders = \App\Models\Order::factory(100)->create();
 });
 

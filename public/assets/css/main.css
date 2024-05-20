@@ -2098,6 +2098,40 @@ video {
     --tw-bg-opacity: 1 !important;
     background-color: rgb(252 213 53 / .9) !important;
 }
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+#overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+#alreadyOpenTransaction {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#alreadyOpenTransaction.open {
+    display: flex;
+    opacity: 1;
+    transform: scale(1);
+}
 .border-yelow {
     --tw-bg-opacity: 1 !important;
     border-color: rgb(252 213 53 / var(--tw-bg-opacity)) !important;
@@ -3010,15 +3044,16 @@ body {
 .modalTrade.active{
     transform: translateZ(0);
 }
-
+.error{
+    font-size: 14px;
+}
 .modalTrade{
     border-radius: 16px 16px 0 0;
-    max-height: calc(100% - 80px);
+    max-height: calc(100vh - 80px);
     background-color: white;
     max-width: 100vw;
     position: absolute;
     right: 0;
-    bottom: 0;
     overflow: auto;
     width: 100%;
     height: 100%;
