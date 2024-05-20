@@ -4,6 +4,7 @@ namespace App\Http\Actions\User\Balance;
 
 use App\Models\Balance;
 use App\Models\Currency;
+use Illuminate\Support\Facades\Log;
 
 class Add
 {
@@ -14,6 +15,7 @@ class Add
      */
     public function run($currency, $amount)
     {
+        Log::info('Add balance', ['currency' => $currency, 'amount' => $amount]);
         $balance = Balance::where('user_id', auth()->id())->where('currency', $currency)->first();
         if ($balance) {
             $balance->amount += $amount;

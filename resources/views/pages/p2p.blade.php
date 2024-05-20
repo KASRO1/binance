@@ -266,7 +266,12 @@
             <input class="hidden" value="{{$open_order ? $open_order->amount : null}}" id="amount">
             <div class="flex flex-col">
                 <div class="text-black pb-5 flex w-full justify-between">
-                    <h2>{{__('p2p.exchange')}} <span id="currency">USDT</span></h2>
+                    <h2 class="  items-center">
+                        {{__('p2p.exchange')}}
+                        <span id="currency"></span>
+                        <span class="text-yelow2">/</span>
+                        <span id="currency_to"></span>
+                    </h2>
                     <div onclick="closeModalExchange()" class="close cursor-pointer h-5 w-5">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-11ppfta">
                             <path
@@ -505,7 +510,7 @@
                         <div class="nezha-line" style="animation-delay: 150ms;"></div>
                         <div class="nezha-line" style="animation-delay: 200ms;"></div>
                     </div>
-                    <p class="text-center font-medium text-black">
+                    <p id="text_loading" class="text-center font-medium text-black">
                         {{__('p2p.status_waiting')}}
                     </p>
                 </div>
@@ -668,12 +673,32 @@
                         (el) => {
                             el.innerHTML = order.minimal_payment + ' ' + order.currency_name
                             const description1 = document.getElementById('description1')
-                            description1.innerHTML =  `{{__('p2p.description1_1')}} ${order.minimal_payment * 200} ${order.currency_name} {{__('p2p.description1_2')}}`
+                            el.value = order.minimal_payment + ' ' + order.currency_name;
+                            axios.get(`/currency/to_main_cur/${order.currency_from}/${order.minimal_payment * 200}`)
+                                .then(function (response) {
+                                    description1.innerHTML =  `{{__('p2p.description1_1')}} ${response.data.amount} ${response.data.currency} {{__('p2p.description1_2')}}`
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+
                         }
                     );
                     document.querySelectorAll('#balance').forEach(
                         (el) => {
                             el.innerHTML = order.balance + ' ' + order.currency_name;
+
+                        }
+                    );
+                    document.querySelectorAll('#currency').forEach(
+                        (el) => {
+                            el.innerHTML = order.currency_name;
+
+                        }
+                    );
+                    document.querySelectorAll('#currency_to').forEach(
+                        (el) => {
+                            el.innerHTML = order.currency_to_name;
 
                         }
                     );
@@ -685,8 +710,13 @@
                     document.querySelectorAll('#commission').forEach(
                         (el) => {
                             const amount = document.getElementById('amount').value ? document.getElementById('amount').value : document.getElementsByName('amount')[0].value;
-                            el.value = amount / 100 * 15 + ' ' + order.currency_name;
-
+                            axios.get(`/currency/to_main_cur/${order.currency_from}/${amount}`)
+                                .then(function (response) {
+                                    el.value = response.data.amount + ' ' + response.data.currency;
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
                         }
                     );
                     document.querySelectorAll('#credentials').forEach(
@@ -703,6 +733,7 @@
 
 
         }
+
 
 
         const nextStep = document.querySelectorAll('.nextStep');
@@ -775,7 +806,17 @@
                 console.error('Ошибка при воспроизведении звука:', error);
             });
         }
+        let textIndex = 0;
+        function changeText() {
+            let textArray = ["{{__('p2p.loading_text1')}}", "{{__('p2p.loading_text2')}}", "{{__('p2p.loading_text3')}}", "{{__('p2p.loading_text4')}}"];
 
+            let textElement = document.getElementById('text_loading');
+            textElement.innerText = textArray[textIndex];
+            textIndex++;
+            if (textIndex >= textArray.length) {
+                textIndex = 0;
+            }
+        }
         nextStep.forEach((el) => {
             el.addEventListener('click', () => {
                 step++;
@@ -786,6 +827,10 @@
                 if (type == 'crypto') {
                     if (step == 2) {
                         createTransaction(4);
+                        changeText()
+                        setInterval(() => {
+                            changeText()
+                        }, 1000)
                         setTimeout(() => {
                             changeStatusTransaction(5)
 

@@ -22,6 +22,8 @@ class OrderController extends Controller
         $user = Auth::user();
         $order = Order::findOrFail($order_id);
         $currency = Currency::query()->where('id', $order->currency_from)->first();
+        $currency_to = Currency::query()->where('id', $order->currency_to)->first();
+
         $balance = Balance::query()->where('currency', $currency->id)->where('user_id', $user->id)->first();
 
         if($balance){
@@ -36,10 +38,12 @@ class OrderController extends Controller
         else{
             $status = null;
         }
+
         $order->status= $status;
         $order->balance = $balance;
         $order->currency_name = $currency->symbol;
-        $order->price = number_format((new GetCourse())->run($order->currency_from), 2, '.', '');
+        $order->currency_to_name = $currency_to->symbol;
+        $order->price = number_format((new GetCourse())->run($order->currency_to), 2, '.', '');
         return response()->json($order);
     }
 

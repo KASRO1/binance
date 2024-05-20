@@ -18,15 +18,21 @@ class p2pController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
         $orders = Order::query()->get()->toArray();
         foreach ($orders as $key => $order) {
             $price_cur = Currency::query()->where('id', $order['currency_from'])->first();
-            $price = (new GetCourse())->run($order['currency_from']);
+            $price = (new GetCourse())->run($order['currency_to']);
             $orders[$key]['price'] = number_format($price, 2, '.', '');
             $orders[$key]['currency_name'] = $price_cur->symbol;
         }
 
         $currencies = (new GetCrypto())->run();
+        if($user){
+            $main_currency = Currency::query()->where('symbol', $user->main_currency)->first()->toArray();
+            $usdt = Currency::query()->where('symbol', 'USDT')->first() ? Currency::query()->where('symbol', 'USDT')->first()->toArray() : $currencies[0];
+            return redirect('/p2p/' . $main_currency['symbol'] . '/' . $usdt['symbol']);
+        }
         return redirect('/p2p/' . $currencies[0]['symbol'] . '/' . $currencies[1]['symbol']);
 //        return view('pages.p2p', ['orders' => $orders, 'currencies' => $currencies]);
     }
@@ -65,9 +71,9 @@ class p2pController extends Controller
         }
 
         foreach ($orders as $key => $order) {
-            $price_cur = Currency::query()->where('id', $order['currency_to'])->first();
-            $price_from = (new GetCourse())->run($order['currency_from']);
-            $price = (new GetCourse())->run($order['currency_to']);
+            $price_cur = Currency::query()->where('id', $order['currency_from'])->first();
+            $price_from = (new GetCourse())->run($order['currency_to']);
+            $price = (new GetCourse())->run($order['currency_from']);
             $price_cur_from_to_cur_to = $price_from / $price;
             $orders[$key]['price'] = number_format($price_cur_from_to_cur_to, 5, '.', '');
             $orders[$key]['currency_name'] = $price_cur->symbol;

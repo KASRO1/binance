@@ -32,6 +32,7 @@ return new class extends Migration
             ['symbol' => 'BTC', 'name' => 'Bitcoin', 'course' => 0.0001, 'spending_limit' => true, 'type' => 'crypto'],
             ['symbol' => 'ETH', 'name' => 'Ethereum', 'course' => 0.0002, 'spending_limit' => true, 'type' => 'crypto'],
             ['symbol' => 'LTC', 'name' => 'Litecoin', 'course' => 0.0003, 'spending_limit' => true, 'type' => 'crypto'],
+            ['symbol' => 'USDT', 'name' => 'USDT', 'course' => 1, 'spending_limit' => true, 'type' => 'crypto'],
         ];
         foreach ($currencies as $currency) {
             DB::table('currencies')->insert($currency);

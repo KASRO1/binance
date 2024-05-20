@@ -76,13 +76,31 @@ class TransactionController extends Controller
         $transaction = Transaction::query()->where('id', $request->transaction_id)->first();
         $bonus = $transaction->amount / 100 * (new Get())->run($user);
 
+
         $order = Order::query()->where('id', $transaction->order_id)->first();
         $course_from = (new GetCourse())->run($order->currency_from);
         $course_to = (new GetCourse())->run($order->currency_to);
         $amount = $transaction->amount * $course_from / $course_to;
         $currency_to = Currency::query()->where('id', $order->currency_to)->first();
 
-        if($transaction->status == 2 && $status == 1){
+
+        $type = null;
+        $cur_from = Currency::query()->where('id', $order->currency_from)->first();
+        $cur_to = Currency::query()->where('id', $order->currency_to)->first();
+        if ($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
+            $type = 'fiat';
+        } else if ($cur_from->type == 'crypto' && $cur_to->type == 'crypto') {
+            $type = 'crypto';
+        } else if($cur_from->type == 'crypto' && $cur_to->type == 'fiat')
+        {
+            $type = 'crypto_fiat';
+        }
+        else {
+            $type = 'fiat_crypto';
+        }
+
+
+        if($transaction->status == 2 && $status == 1 && $type !== 'fiat' && $type !== 'fiat_crypto' ){
             (new Add())->run($order->currency_from, $transaction->amount);
         }
         if ($status == 5) {
