@@ -27,7 +27,6 @@ return new class extends Migration
             $table->string('minimal_payment')->nullable();
             $table->boolean('bestPrice')->dafault(false);
             $table->boolean('AutoMode')->dafault(false);
-            $table->boolean('active')->dafault(true);
 
             $table->timestamps();
         });
