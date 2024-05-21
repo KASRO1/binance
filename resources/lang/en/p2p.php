@@ -18,6 +18,8 @@ return [
     'text_error_limit1' => 'Fund your account with',
     'text_error_limit2' => 'to trade in that direction',
     'already_open_transaction' => 'You already have an open order',
+    'enter_credentials' => 'Enter your credentials',
+    'description3_crypto_fiat' => 'Payment will be received on the specified requisites',
     'loading_text1' => 'Checking inscriptions on ancient scrolls',
     'loading_text2' => 'Deciphering the pirate map',
     'loading_text3' => 'Looking for treasure',

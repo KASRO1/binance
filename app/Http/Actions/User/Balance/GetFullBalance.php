@@ -15,8 +15,20 @@ class GetFullBalance
         $full_balance = 0;
         foreach ($balances as $balance) {
             $currency = Currency::query()->where('id', $balance->currency)->first();
+            if ($mainCurrency->symbol == $currency->symbol) {
+
+                continue;
+            }
             $full_balance += $balance->amount * $currency->course;
+
         }
-        return number_format($full_balance * $mainCurrency->course ,3, '.', '');
+        $full_balance = $full_balance * $mainCurrency->course;
+
+        $mainCurrencyBalance = Balance::query()->where('user_id', $user->id)->where('currency', $mainCurrency->id)->first();
+        if ($mainCurrencyBalance) {
+            $full_balance += $mainCurrencyBalance->amount;
+        }
+
+        return number_format($full_balance, 1, '.', '');
     }
 }

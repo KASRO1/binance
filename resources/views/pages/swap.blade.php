@@ -14,7 +14,7 @@
                         <input oninput="updateData()" name="amount_from" class="style_reset_input flex-1" placeholder="{{__('swap.enter_amount')}}">
                         <select onchange="updateData()"  name="currency_from" class="bg-transparent">
 
-                            @foreach($currency_crypto as $currency)
+                            @foreach($currencies as $currency)
                                 <option value="{{$currency['id']}}">{{$currency['name']}}</option>
                             @endforeach
                         </select>
@@ -31,7 +31,7 @@
                         <input name="amount_to" class="style_reset_input flex-1" placeholder="{{__('swap.enter_amount')}}">
                         <select onchange="updateData()" name="currency_to" class="bg-transparent">
 
-                            @foreach($currency_crypto as $currency)
+                            @foreach($currencies as $currency)
                                 <option value="{{$currency['id']}}">{{$currency['name']}}</option>
                             @endforeach
                         </select>

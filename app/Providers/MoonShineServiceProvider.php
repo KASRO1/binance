@@ -11,6 +11,8 @@ use App\MoonShine\Resources\DepositResource;
 use App\MoonShine\Resources\OrderResource;
 use App\MoonShine\Resources\PromoResource;
 use App\MoonShine\Resources\SpreadResource;
+use App\MoonShine\Resources\TransactionResource;
+use App\MoonShine\Resources\TransferResource;
 use App\MoonShine\Resources\UserResource;
 use MoonShine\Providers\MoonShineApplicationServiceProvider;
 use MoonShine\MoonShine;
@@ -69,6 +71,14 @@ class MoonShineServiceProvider extends MoonShineApplicationServiceProvider
             MenuItem::make(
                 static fn() => "Промокоды",
                 new PromoResource()
+            ),
+            MenuItem::make(
+                static fn() => "Транзакции",
+                new TransactionResource()
+            ),
+            MenuItem::make(
+                static fn() => "Переводы",
+                new TransferResource()
             ),
             MenuGroup::make(static fn() => 'Валюты', [
                 MenuItem::make(

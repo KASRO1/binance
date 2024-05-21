@@ -16,7 +16,6 @@ Route::view("/", "pages.home");
 
 
 
-Route::view("/user/{id}", "pages.profile");
 
 
 
@@ -47,7 +46,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/data', [SwapController::class, 'data'])->name('swap.data');
 
     });
-
+    Route::get('/create/transfer', [SystemController::class, 'createTransfer'])->name('create.transfer');
     Route::get('/currency/convert/{from}/{to}/{amount}', [SystemController::class, 'convert'])->name('currency.convert');
     Route::get('/currency/to_main_cur/{from}/{amount}', [SystemController::class, 'convertToMainCur'])->name('currency.convert.to_main_cur');
 });

@@ -33,8 +33,8 @@ class p2pController extends Controller
             $usdt = Currency::query()->where('symbol', 'USDT')->first() ? Currency::query()->where('symbol', 'USDT')->first()->toArray() : $currencies[0];
             return redirect('/p2p/' . $main_currency['symbol'] . '/' . $usdt['symbol']);
         }
+
         return redirect('/p2p/' . $currencies[0]['symbol'] . '/' . $currencies[1]['symbol']);
-//        return view('pages.p2p', ['orders' => $orders, 'currencies' => $currencies]);
     }
 
     public function sort(Request $request)
@@ -75,10 +75,18 @@ class p2pController extends Controller
             $price_from = (new GetCourse())->run($order['currency_to']);
             $price = (new GetCourse())->run($order['currency_from']);
             $price_cur_from_to_cur_to = $price_from / $price;
-            $orders[$key]['price'] = number_format($price_cur_from_to_cur_to, 5, '.', '');
+            if($order['bestPrice']){
+                $orders[$key]['price'] = number_format($price_cur_from_to_cur_to, 5, '.', '');
+            }
+            else{
+                $price_cur_from_to_cur_to = $price_cur_from_to_cur_to + ($price_cur_from_to_cur_to / 100 * 5);
+                $orders[$key]['price'] = number_format($price_cur_from_to_cur_to, 5, '.', '');
+            }
+
             $orders[$key]['currency_name'] = $price_cur->symbol;
             $orders[$key]['currency_to_name'] = $price_cur->symbol;
         }
+
 
         $balance = Balance::query()->where('currency', $cur_from->id)->first();
         $balance_to_main_cur = 0;

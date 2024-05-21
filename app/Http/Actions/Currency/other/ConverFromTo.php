@@ -7,18 +7,17 @@ use App\Models\Currency;
 class ConverFromTo
 {
 
-    public function run($from, $to, $amount, $user = null)
+    public function run($fromCurrencyId, $toCurrencyId, $amount)
     {
-        if($user == null)
-        {
-            $user = auth()->user();
+        $fromCurrency = Currency::query()->where('id', $fromCurrencyId)->first();
+        $toCurrency = Currency::query()->where('id', $toCurrencyId)->first();
+
+        if (!$fromCurrency || !$toCurrency) {
+            throw new \Exception('Currency not found');
         }
-        $main_currency = Currency::query()->where('symbol', $user->main_currency)->first();
-        $from = Currency::query()->where('id', $from)->first();
-        $to = Currency::query()->where('id', $to)->first();
-        $amount = $amount * $from->course;
-        $amount = $amount / $to->course;
-        $to_amount_main_currency = $amount * $main_currency->course;
-        return $to_amount_main_currency;
+
+        $amountInBaseCurrency = $amount * $fromCurrency->course;
+        $convertedAmount = $amount * $fromCurrency->course / $toCurrency->course;
+        return $convertedAmount;
     }
 }

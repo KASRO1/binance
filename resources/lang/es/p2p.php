@@ -17,6 +17,8 @@ return [
     'credentials' => 'Credenciales',
     'balance' => 'Saldo',
     'commission' => 'Comisión',
+    'enter_credentials' => 'Introduce tus credenciales',
+    'description3_crypto_fiat' => 'El pago se recibirá en los requisitos especificados',
     'description1' => 'Para intercambiar criptomoneda por fiat sin comisión, alcanza un ingreso de 5068$ bs',
     'description1_1' => 'Para intercambiar criptomoneda por fiat sin comisión, alcanza',
     'loading_text1' => 'Revisando inscripciones en antiguos pergaminos',

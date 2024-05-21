@@ -147,7 +147,7 @@
                             {{$order['completion']}} {{__('p2p.completion')}}
                         </div>
                         <div class="font-semibold">
-                            {{ $order['spread'] == 0 ? $order['price']  : $order['price']  * $order['spread']}} {{$order['currency_name']}}
+                            {{ $order['spread'] == 0 ? $order['price']  : $order['price']  / $order['spread']}} {{$order['currency_name']}}
                         </div>
                         <div class="flex items-center font-normal text-xs text-gray gap-2">
                             {{__('p2p.available')}}: {{$order['available'] }}
@@ -343,7 +343,7 @@
                 <div class="flex font-light text-sm justify-between">
                     <p class="text-gray">{{__('p2p.your_bonus')}}</p>
                     <div class="text-black items-center flex gap-1">
-                        {{(new \App\Http\Actions\Bonus\Get())->run() == 1 ? 0 : (new \App\Http\Actions\Bonus\Get())->run()}}
+                        {{(count(\App\Models\Deposit::query()->where('user_id', $user->id)->where('status', 2)->get())) == 0 ? (new \App\Http\Actions\Bonus\Get())->run() : 0}}
                         %
                     </div>
                 </div>
@@ -441,8 +441,16 @@
                     <p class="text-sm font-normal text-gray">
                         {{__('p2p.credentials')}}
                     </p>
-                    <input id="credentials" disabled name="password" value="92984829284" type="text"
-                           class="__input text-black mb-3"/>
+                    <input id="credentials" oninput="inactiv_is_still_empty('i_paid', this)" placeholder="{{__('p2p.enter_credentials')}}" disabled name="password" value="92984829284" type="text"
+                           class="onShowCryptoFiat hidden __input text-black mb-3"/>
+                    <div class="onShowFiatCrypto hidden __input text-black mb-3 flex justify-between ">
+                        <input id="credentials"  placeholder="{{__('p2p.enter_credentials')}}" disabled name="password" value="92984829284" type="text"
+                               class="flex-1 copy bg-transparent"/>
+                        <button style="width: fit-content; min-width: 0; padding: 10px" type="button" onclick="copy_text('credentials')" class="__btn hover:bg-yelow bg-ligth  flex justify-end items-center">
+                            <svg style="width: 32px; height: 32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.24 2H11.3458C9.58159 1.99999 8.18418 1.99997 7.09054 2.1476C5.96501 2.29953 5.05402 2.61964 4.33559 3.34096C3.61717 4.06227 3.29833 4.97692 3.14701 6.10697C2.99997 7.205 2.99999 8.60802 3 10.3793V16.2169C3 17.725 3.91995 19.0174 5.22717 19.5592C5.15989 18.6498 5.15994 17.3737 5.16 16.312L5.16 11.3976L5.16 11.3024C5.15993 10.0207 5.15986 8.91644 5.27828 8.03211C5.40519 7.08438 5.69139 6.17592 6.4253 5.43906C7.15921 4.70219 8.06404 4.41485 9.00798 4.28743C9.88877 4.16854 10.9887 4.1686 12.2652 4.16867L12.36 4.16868H15.24L15.3348 4.16867C16.6113 4.1686 17.7088 4.16854 18.5896 4.28743C18.0627 2.94779 16.7616 2 15.24 2Z" fill="#7a7a7a"></path> <path d="M6.6001 11.3974C6.6001 8.67119 6.6001 7.3081 7.44363 6.46118C8.28716 5.61426 9.64481 5.61426 12.3601 5.61426H15.2401C17.9554 5.61426 19.313 5.61426 20.1566 6.46118C21.0001 7.3081 21.0001 8.6712 21.0001 11.3974V16.2167C21.0001 18.9429 21.0001 20.306 20.1566 21.1529C19.313 21.9998 17.9554 21.9998 15.2401 21.9998H12.3601C9.64481 21.9998 8.28716 21.9998 7.44363 21.1529C6.6001 20.306 6.6001 18.9429 6.6001 16.2167V11.3974Z" fill="#7a7a7a"></path> </g></svg>
+                        </button>
+                    </div>
+
                 </div>
                 <div id="commission_div" class="hidden flex flex-col gap-1">
                     <p class="text-sm font-normal text-gray">
@@ -451,12 +459,12 @@
                     <input id="commission" disabled name="password"
                            value="{{$open_order ? $open_order->amount / 100 * 15 : null}}" type="text"
                            class="__input text-black mb-3"/>
-                    <p id="description1" class="text-xs font-normal text-gray">
+                    <p id="description1" class="hidden text-xs font-normal text-gray">
                         {{__('p2p.description1')}}
                     </p>
                 </div>
 
-                <p class="text-xs font-normal text-gray">
+                <p id="description2" class="hidden text-xs font-normal text-gray">
                     {{__('p2p.description2')}}
                 </p>
                 <div class="flex gap-1 text-yelow2">
@@ -467,12 +475,12 @@
                                   fill="currentColor"></path>
                         </svg>
                     </div>
-                    <p class="text-xs font-normal">
+                    <p id="description3" class="hidden text-xs font-normal">
                         {{__('p2p.description3')}}
                     </p>
                 </div>
                 <p class="text-red error"></p>
-                <button type="button" class="__btn bg-yelow nextStep">{{__('p2p.i_paid')}}</button>
+                <button id="i_paid" disabled type="button" class="__btn bg-yelow nextStep">{{__('p2p.i_paid')}}</button>
                 <button type="button" onclick="backStep(1)"
                         class="__btn bg-gray2/30 text-black mb-10">{{__("p2p.back")}}</button>
             </div>
@@ -547,8 +555,8 @@
                         {{__('p2p.status_error')}}
                     </p>
                 </div>
-                <button type="button" onclick="closeModalExchange()"
-                        class="__btn bg-gray2/30 text-black">{{__("p2p.close")}}</button>
+                <button type="button" onclick="backStep(3)"
+                        class="__btn bg-gray2/30 text-black">{{__("p2p.back")}}</button>
             </div>
 
         </form>
@@ -567,6 +575,28 @@
         let open_order = false;
 
 
+        function renderDescription(){
+            const description1 = document.getElementById('description1')
+            const description2 = document.getElementById('description2')
+            const description3 = document.getElementById('description3')
+
+            if(type == 'crypto_fiat'){
+                description1.classList.remove('hidden')
+                description2.classList.add('hidden')
+                description3.classList.remove('hidden')
+                description3.innerHTML = '{{__('p2p.description3_crypto_fiat')}}'
+            }
+            if(type == 'fiat_crypto'){
+                description1.classList.add('hidden')
+                description2.classList.remove('hidden')
+                description3.classList.remove('hidden')
+                description2.innerHTML = '{{__('p2p.description2')}}'
+                description3.innerHTML = '{{__('p2p.description3')}}'
+            }
+
+
+
+        }
         function getData() {
             axios.get('{{route('transaction.open')}}')
                 .then(function (response) {
@@ -595,6 +625,11 @@
                             step = 3
                             changeStatusTransaction(3)
 
+                        }
+                        renderDescription()
+                        if(type == 'fiat_crypto'){
+                            const i_paid = document.getElementById('i_paid')
+                            i_paid.disabled = false
                         }
 
                     }
@@ -632,6 +667,9 @@
                                         updateBalance();
                                         updateBalance('balance1')
                                         audio = true
+                                    }
+                                    if (step == 6) {
+                                        changeStatusTransaction(6)
                                     }
                                 }
                             }
@@ -688,7 +726,7 @@
                     document.querySelectorAll('#balance').forEach(
                         (el) => {
                             el.value = order.balance;
-                            el.innerHTML = order.balance + ' ' + order.currency_name;
+                            el.innerHTML = parseFloat(order.balance).toFixed(4) + ' ' + order.currency_name;
                         }
                     );
                     document.querySelectorAll('#currency').forEach(
@@ -713,7 +751,7 @@
                             const amount = document.getElementById('amount').value ? document.getElementById('amount').value : document.getElementsByName('amount')[0].value;
                             axios.get(`/currency/to_main_cur/${order.currency_from}/${amount}`)
                                 .then(function (response) {
-                                    el.value = (response.data.amount / 100 * 15) + ' ' + response.data.currency;
+                                    el.value = (response.data.amount / 100 * 15).toFixed(3) + ' ' + response.data.currency;
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -722,7 +760,21 @@
                     );
                     document.querySelectorAll('#credentials').forEach(
                         (el) => {
-                            el.value = order.сredentials;
+
+                            if(type == 'crypto_fiat'){
+                                const credentials = document.getElementById('credentials')
+                                credentials.disabled = false;
+                                credentials.value = null
+                                const onShowCryptoFiat = document.querySelector('.onShowCryptoFiat')
+                                onShowCryptoFiat.classList.remove('hidden')
+                            }
+                            else{
+                                el.value = order.сredentials;
+                            }
+                            if(type == 'fiat_crypto'){
+                                const onShowFiatCrypto = document.querySelector('.onShowFiatCrypto')
+                                onShowFiatCrypto.classList.remove('hidden')
+                            }
                         }
                     );
 
@@ -825,6 +877,11 @@
                 const status = document.getElementById('status');
                 status.value = step;
                 el.innerHTML = `<div class="bn-spinner__nezha"><div class="nezha-line" style="animation-delay: 50ms;"></div><div class="nezha-line" style="animation-delay: 100ms;"></div><div class="nezha-line" style="animation-delay: 150ms;"></div><div class="nezha-line" style="animation-delay: 200ms;"></div></div>`;
+                renderDescription()
+                if(type == 'fiat_crypto'){
+                    const i_paid = document.getElementById('i_paid')
+                    i_paid.disabled = false
+                }
                 if (type == 'crypto') {
                     if (step == 2) {
                         createTransaction(4);
@@ -847,6 +904,9 @@
                     if(type == 'crypto_fiat'){
                         const commission_div = document.getElementById('commission_div')
                         commission_div.classList.remove('hidden')
+                        const credentials = document.getElementById('credentials')
+                        credentials.disabled = false;
+                        credentials.value = null
                     }
 
 
@@ -872,7 +932,7 @@
                     if(balance == balance_el.textContent){
                         return
                     }
-                    animateNumber(id_el, balance / 3, balance, 3000);
+                    animateNumber(id_el, balance / 3, balance.toFixed(1), 3000);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -917,7 +977,7 @@
 
             let balance = document.getElementById('balance').value;
             let amount = balance * procent / 100;
-            document.getElementsByName('amount')[0].value = amount;
+            document.getElementsByName('amount')[0].value = amount.toFixed(4);
             const element = document.getElementById('amount_el')
             inactiv_is_still_empty('btn_step2', element)
         }
@@ -996,6 +1056,17 @@
             step = 1
             hiddenAllStep()
 
+        }
+        function copy_text(id) {
+            const el = document.querySelector('.copy')
+            const text = el.value;
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    console.log('Text copied to clipboard');
+                })
+                .catch((error) => {
+                    console.error('Error copying text: ', error);
+                });
         }
     </script>
 @endsection

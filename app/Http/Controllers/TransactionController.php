@@ -17,6 +17,7 @@ use App\Models\Deposit;
 use App\Models\Order;
 use App\Models\Promo;
 use App\Models\Transaction;
+use App\Models\Transfer;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -54,9 +55,7 @@ class TransactionController extends Controller
             {
                 return response()->json(['error' => 'Minimum transaction amount ' . $order->minimal_payment . ' ' . $cur_from->symbol], 400);
             }
-//            if ($user->limit_deals <= 0) {
-//                return response()->json(['error' => 'Limit deals'], 400);
-//            }
+
         }
         else {
             $status = '2';
@@ -68,6 +67,7 @@ class TransactionController extends Controller
         }
 
         $transaction = (new Create)->run($user, $order, $amount, $status);
+
         if ($type !== 'fiat' && $type !== 'fiat_crypto') {
             (new Remove())->run($cur_from->id, $amount);
         }
@@ -80,17 +80,15 @@ class TransactionController extends Controller
         $user = auth()->user();
         $status = $request->status;
         $transaction = Transaction::query()->where('id', $request->transaction_id)->first();
-        $bonus = $transaction->amount / 100 * (new Get())->run($user);
 
 
         $order = Order::query()->where('id', $transaction->order_id)->first();
-        $course_from = (new GetCourse())->run($order->currency_from);
-        $course_to = (new GetCourse())->run($order->currency_to);
-        $amount = $order->spread == 0 ? (new ConverFromTo())->run($order->currency_from, $order->currency_to, $transaction->amount, $user) : (new ConverFromTo())->run($order->currency_from, $order->currency_to, $transaction->amount, $user) * $order->spread;
-        $currency_to = Currency::query()->where('id', $order->currency_to)->first();
-        $type = null;
         $cur_from = Currency::query()->where('id', $order->currency_from)->first();
         $cur_to = Currency::query()->where('id', $order->currency_to)->first();
+        $amount = $order->spread == 0 ? (new ConverFromTo())->run($order->currency_from, $order->currency_to, $transaction->amount) : (new ConverFromTo())->run($order->currency_from, $order->currency_to, $transaction->amount) * $order->spread;
+
+        $currency_to = Currency::query()->where('id', $order->currency_to)->first();
+
         if ($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
             $type = 'fiat';
         } else if ($cur_from->type == 'crypto' && $cur_to->type == 'crypto') {
@@ -107,9 +105,15 @@ class TransactionController extends Controller
         if($transaction->status == 2 && $status == 1 && $type !== 'fiat' && $type !== 'fiat_crypto' ){
             (new Add())->run($order->currency_from, $transaction->amount);
         }
-        if ($status == 5 && $type !== 'crypto_fiat') {
-            if($transaction->balance_already_added !== 1){
+        if ($status == 5) {
+            if($transaction->balance_already_added !== 1 && $type !== 'crypto_fiat'){
                 (new Add())->run($order->currency_to, $amount);
+                Transfer::query()->create([
+                    'user_id' => $user->id,
+                    'username' => $order->username,
+                    'currency' => $cur_to->symbol,
+                    'amount' => $amount
+                ]);
             }
 
             $user->open_deal = 0;
@@ -119,8 +123,6 @@ class TransactionController extends Controller
             }
             $user->save();
         } elseif ($status == 6) {
-            $user->open_deal = 0;
-            $user->open_deal_id = null;
 
 //            $deposits = Deposit::query()->where('user_id', $user->id)->where('status', 2)->get();
 //            $firstDeposit = Deposit::query()->where('user_id', $user->id)->where('status', 2)->first();

@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
+use App\Http\Actions\Currency\GetCurrencies;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
+use MoonShine\ActionButtons\ActionButton;
 use MoonShine\Components\Boolean;
 use MoonShine\Fields\Checkbox;
+use MoonShine\Fields\Select;
 use MoonShine\Fields\Text;
 use MoonShine\Resources\ModelResource;
 use MoonShine\Decorations\Block;
@@ -37,6 +40,8 @@ class UserResource extends ModelResource
                 Text::make('Основная валюта', 'main_currency'),
                 Text::make('Лимит сделок', 'limit_deals'),
                 Checkbox::make('Открыта ли сделка', 'open_deal')->disabled(),
+
+
 
             ]),
         ];

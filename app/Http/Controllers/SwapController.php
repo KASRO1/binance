@@ -19,7 +19,8 @@ class SwapController extends Controller
     {
         $currency_fiat = (new GetFiat())->run();
         $currency_crypto = (new GetCrypto())->run();
-        return view('pages.swap', compact('currency_fiat', 'currency_crypto'));
+        $currencies = Currency::query()->get();
+        return view('pages.swap', compact('currency_fiat', 'currency_crypto', 'currencies'));
     }
 
     public function swap(SwapRequest $request)

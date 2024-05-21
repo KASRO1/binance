@@ -55,18 +55,17 @@
                 </p>
             </div>
             <div class="flex mb-10 flex-col gap-2">
-                @foreach($transactions as $transaction)
+                @foreach($transfers as $transfer)
                     <div class="border justify-between flex gap-2 items-center p-5 border-gray3 rounded-xl">
                         <div class="flex items-center gap-2">
-                            <div
-                                class="relative w-12 h-12 text-lg flex items-center justify-center rounded-full " style="background-color: {{$transaction['color']}}">
-                                {{$transaction['order']['username'][0]}}
+                            <div class="relative w-12 h-12 text-lg flex items-center justify-center rounded-full " style="background-color: {{$transfer['color']}}">
+                                {{$transfer['username'][0]}}
 
                             </div>
-                            {{$transaction['order']['username']}}
+                            {{$transfer['username']}}
                         </div>
                         <p class="text-green">
-                            + {{number_format($transaction['order']['spread'] == 0 ? (new \App\Http\Actions\Currency\other\ConverFromTo())->run( $transaction['order']['currency_from'], $transaction['order']['currency_to'], $transaction['amount'], $user) : (new \App\Http\Actions\Currency\other\ConverFromTo())->run( $transaction['order']['currency_from'], $transaction['order']['currency_to'], $transaction['amount'], $user) * $transaction['order']['spread'] , 3, '.', '') . " " . $transaction['currency_to']['symbol']}}
+                            + {{number_format($transfer['amount'], 4, '.', '') . ' ' . $transfer['currency']}}
                         </p>
                     </div>
                 @endforeach

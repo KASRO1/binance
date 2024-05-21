@@ -8,6 +8,7 @@ use App\Http\Actions\Currency\GetCurrencies;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
 
+use MoonShine\ActionButtons\ActionButton;
 use MoonShine\Fields\Checkbox;
 use MoonShine\Fields\Image;
 use MoonShine\Fields\Select;
@@ -57,6 +58,7 @@ class OrderResource extends ModelResource
                 Text::make('spread', 'spread')->sortable(),
                 Text::make('Минимальная сумма сделки', 'minimal_payment')->sortable(),
                 Text::make('Платежные реквизиты', 'сredentials')->sortable(),
+
                 Select::make('Валюта от', 'currency_from')->options((new GetCurrencies())->run('options'))->sortable(),
                 Select::make('Валюта в', 'currency_to')->options((new GetCurrencies())->run('options'))->sortable(),
                 Checkbox::make('Лучшая цена', 'bestPrice')->sortable(),

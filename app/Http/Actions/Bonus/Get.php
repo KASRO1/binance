@@ -17,16 +17,17 @@ class Get
         }
         $promo = $user->promo_code;
         $deposits = Deposit::query()->where('user_id', $user->id)->where('status', 2)->get();
-        if($promo){
+        if($promo && $deposits->count() <= 1){
             $promo = Promo::query()->where('code', $promo)->first();
             $bonus = $promo->deposit_bonus;
         }
-        elseif ($deposits->count() === 0){
+        elseif ($deposits->count() <= 1){
             $bonus = 30;
         }
         else{
-            $bonus = 1;
+            $bonus = 0;
         }
         return $bonus;
+
     }
 }
