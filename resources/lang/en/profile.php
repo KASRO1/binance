@@ -12,4 +12,5 @@ return [
     'payment_time_limit' => 'Payment Time Limit',
     'available' => 'Available',
     'positive_feedback' => 'Positive Feedback',
+    'deposit_bonus' => 'The current refill bonus',
 ];

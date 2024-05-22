@@ -10,4 +10,5 @@ return [
     'payment_time_limit' => 'Límite de Tiempo de Pago',
     'available' => 'Disponible',
     'positive_feedback' => 'Retroalimentación Positiva',
+    'deposit_bonus' => 'El bono de recarga actual',
 ];

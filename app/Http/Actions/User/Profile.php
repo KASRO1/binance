@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions\User;
 
+use App\Http\Actions\Bonus\Get;
 use App\Models\Currency;
 use App\Models\Order;
 use App\Models\Promo;
@@ -23,13 +24,8 @@ class Profile
         }
 
 
-        $promo_discount = Promo::query()->where('code', $user->promo_code)->first();
-        if($promo_discount){
-            $promo_discount = $promo_discount->deposit_bonus;
-        }
-        else{
-            $promo_discount = 30;
-        }
+        $promo_discount = (new Get())->run($user);
+
 
         return view('pages.profile', ['user'=> $user, 'transfers' => $transfers, 'promo_discount' => $promo_discount]);
     }

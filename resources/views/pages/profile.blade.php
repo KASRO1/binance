@@ -63,7 +63,7 @@
 {{--                            <p class="text-white">400 bs</p>--}}
 {{--                        </div>--}}
                         <div class="flex font-light text-sm justify-between">
-                            <p class="text-gray">Bonus dep</p>
+                            <p class="text-gray">{{__('profile.deposit_bonus')}}</p>
                             <p class="text-white">{{$promo_discount}} %</p>
                         </div>
                         <div class="flex font-light text-sm justify-between">
