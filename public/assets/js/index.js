@@ -14,6 +14,7 @@ function tabsSwitcher(data, prevStep, nextStep_id, timeout = 0, submit = false) 
     }, timeout);
 
 }
+
 function openModal() {
     document.getElementById('alreadyOpenTransaction').classList.add('open');
     document.getElementById('overlay').classList.add('open');
@@ -32,21 +33,33 @@ function scrollTop() {
 }
 
 
-function changeAllErrors(error){
+function changeAllErrors(error) {
     const errors = document.querySelectorAll('.error');
     errors.forEach(el => {
         el.innerHTML = error;
     });
 
 }
+
 function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
+
+    if (open_order && open_order_id !== order_id) {
+        getData()
+
+        return
+    }
     const body = document.querySelector("body");
     body.classList.add("overflow-hidden");
     const modal = document.getElementById("modalTrade");
     modal.classList.add("block");
     hiddenAllStep()
     updateData(order_id);
+    if (open_order_id === order_id) {
+        getData()
+    }
+
     showStep(step)
+
     closeModal()
 
     modal.classList.remove("hidden");
@@ -55,6 +68,7 @@ function showModalExchange(el, timeout = 100, order_id = null, step = 1) {
         modal.classList.add("active");
     }, timeout);
 }
+
 function hiddenAllStep() {
     document.getElementById('infoExchange').classList.add('hidden');
     document.getElementById('paymentExchange').classList.add('hidden');
@@ -83,11 +97,13 @@ function closeModalExchange() {
 }
 
 function showModalProfileContent(el, timeout = 100) {
+
     const body = document.querySelector("body");
     body.classList.add("overflow-hidden");
     const modal = document.getElementById("modalProfileContent");
     modal.classList.add("block");
     modal.classList.remove("hidden");
+
     setTimeout(() => {
         scrollTop();
         modal.classList.add("active");
@@ -210,7 +226,7 @@ function existPromocode(url) {
                 select.disabled = true;
             } else {
                 info.innerHTML = '';
-                select.removeAttribute('disabled') ;
+                select.removeAttribute('disabled');
             }
 
         }).catch(err => {
@@ -218,6 +234,30 @@ function existPromocode(url) {
 
         });
     }, 500);
+}
+
+function extractSignificantDigits(num) {
+    const numStr = Math.abs(num).toString(); // Получаем абсолютное значение и преобразуем в строку
+
+
+    let [integer, fraction] = numStr.split('.'); // Разделим на целую и дробную части
+
+    if (integer !== '0') { // Если есть не нулевая целая часть
+        if (fraction) {
+            return `${num >= 0 ? '' : '-'}${integer}.${fraction.slice(0, 2)}`; // Берем первые две цифры из дробной части без округления
+        }
+        return `${num >= 0 ? '' : '-'}${integer}`; // Если дробной части нет, возвращаем только целую часть
+    } else { // Если целая часть равна 0
+        if (fraction) {
+            let nonzeroIndex = fraction.search(/[^0]/); // Находим первый ненулевой символ в дробной части
+            if (nonzeroIndex > -1) {
+                // Берем две значащие цифры после всех нулей
+                let significantDigits = fraction.slice(nonzeroIndex, nonzeroIndex + 2);
+                return `${num >= 0 ? '' : '-'}0.${'0'.repeat(nonzeroIndex)}${significantDigits}`;
+            }
+        }
+        return `${num >= 0 ? '' : '-'}0`; // Если дробная часть отсутствует или нулевая
+    }
 }
 
 

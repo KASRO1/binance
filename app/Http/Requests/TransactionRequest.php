@@ -27,4 +27,5 @@ class TransactionRequest extends FormRequest
             'status'=> 'required|integer'
         ];
     }
+
 }

@@ -95,8 +95,7 @@
                     </button>
                 </form>
             </div>
-
-            @if(Auth::check() && Auth::user()->limit_deals <= 0 && $type === 'crypto')
+            @if($error && $type != 'fiat_crypto' )
                 <div class="flex flex-col pt-7 gap-3">
                     <div class="h-24 items-center justify-center flex text-red">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-24">
@@ -110,7 +109,7 @@
                         You have exhausted your cryptocurrency transaction limit
                     </p>
                     <p class="text-gray2 text-sm text-center">
-                        {{$error}}
+                        {{$error['message']}}
                     </p>
                     <a href="{{route('p2p.sort.show:id:id', [$user->main_currency_arr['symbol'], $cur_to->symbol])}}"
                        class="flex items-center justify-center __btn bg-yelow">Exchange</a>
@@ -573,6 +572,7 @@
         step = 1;
         type = '{{$type}}';
         let open_order = false;
+        let open_order_id = null;
 
 
         function renderDescription(){
@@ -636,6 +636,7 @@
                 })
                 .catch(function (error) {
                     console.log(error);
+
                 });
         }
 
@@ -646,7 +647,7 @@
             axios.get('/order/get/' + order_id)
                 .then(function (response) {
                     let order = response.data;
-
+                    open_order_id = order.id;
                     document.querySelectorAll('#order_id').forEach(
                         (el) => {
                             el.value = order.id;
@@ -660,18 +661,16 @@
                             // showStep(step);
                             if (order.status !== null) {
                                 step = order.status;
-                                if (!audio) {
                                     if (step == 5) {
                                         changeStatusTransaction(5)
-                                        playSound('/assets/kassa.mp3')
+
+
                                         updateBalance();
                                         updateBalance('balance1')
-                                        audio = true
                                     }
                                     if (step == 6) {
                                         changeStatusTransaction(6)
                                     }
-                                }
                             }
 
                         }
@@ -726,7 +725,7 @@
                     document.querySelectorAll('#balance').forEach(
                         (el) => {
                             el.value = order.balance;
-                            el.innerHTML = parseFloat(order.balance).toFixed(4) + ' ' + order.currency_name;
+                            el.innerHTML = extractSignificantDigits(order.balance) + ' ' + order.currency_name;
                         }
                     );
                     document.querySelectorAll('#currency').forEach(
@@ -751,7 +750,7 @@
                             const amount = document.getElementById('amount').value ? document.getElementById('amount').value : document.getElementsByName('amount')[0].value;
                             axios.get(`/currency/to_main_cur/${order.currency_from}/${amount}`)
                                 .then(function (response) {
-                                    el.value = (response.data.amount / 100 * 15).toFixed(3) + ' ' + response.data.currency;
+                                    el.value = extractSignificantDigits(response.data.amount / 100 * 15) + ' ' + response.data.currency;
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -799,6 +798,7 @@
                 status: step,
             })
                 .then(function (response) {
+                    open_order = true;
                     const transaction_id = document.getElementById('transaction_id');
                     transaction_id.value = response.data.id;
                     this.step = step;
@@ -807,6 +807,7 @@
                 .catch(function (error) {
                     changeAllErrors(error.response.data.error)
                     this.step = 1;
+
                 });
         }
 
@@ -821,16 +822,23 @@
                     this.step = step;
                     showStep(step);
                     updateBalance();
-
+                    if(step == 5 && !audio){
+                        audio = true;
+                        playSound('/assets/kassa.mp3')
+                    }
                 })
                 .catch(function (error) {
                     this.step = step - 1;
                     changeAllErrors(error.response.data.error)
+
                 });
         }
 
         function backStep(step_func) {
             changeStatusTransaction(step_func)
+            if(step_func == 1){
+                open_order = false;
+            }
             step = step_func
             updateBalance();
         }
@@ -892,7 +900,7 @@
                         setTimeout(() => {
                             changeStatusTransaction(5)
 
-                            playSound('/assets/kassa.mp3')
+
                         }, 5000)
                     }
                 } else if (type == 'fiat_crypto' || type == 'crypto_fiat') {
@@ -977,7 +985,7 @@
 
             let balance = document.getElementById('balance').value;
             let amount = balance * procent / 100;
-            document.getElementsByName('amount')[0].value = amount.toFixed(4);
+            document.getElementsByName('amount')[0].value = extractSignificantDigits(amount);
             const element = document.getElementById('amount_el')
             inactiv_is_still_empty('btn_step2', element)
         }
@@ -1018,6 +1026,7 @@
                 })
                 .catch(function (error) {
                     console.log(error);
+                    changeStatusTransaction(3);
                 });
         })
         setInterval(() => {
@@ -1068,5 +1077,11 @@
                     console.error('Error copying text: ', error);
                 });
         }
+        function toFixedWithoutRounding(number, precision) {
+            const factor = Math.pow(10, precision);
+            const truncated = Math.floor(number * factor) / factor;
+            return truncated.toFixed(precision);
+        }
+
     </script>
 @endsection

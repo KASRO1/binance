@@ -39,7 +39,7 @@ class UserResource extends ModelResource
                 Text::make('Email', 'email')->sortable(),
                 Text::make('Основная валюта', 'main_currency'),
                 Text::make('Лимит сделок', 'limit_deals'),
-                Checkbox::make('Открыта ли сделка', 'open_deal')->disabled(),
+                Checkbox::make('Открыта ли сделка', 'open_deal'),
 
 
 

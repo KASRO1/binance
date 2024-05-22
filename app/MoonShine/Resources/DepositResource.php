@@ -10,6 +10,7 @@ use App\Http\Actions\Currency\GetFiat;
 use App\Http\Actions\Currency\other\ConverFromTo;
 use App\Http\Actions\Currency\other\ConvertToMainCur;
 use App\Http\Actions\User\Balance\Add;
+use App\Http\Controllers\p2pController;
 use App\Models\Balance;
 use App\Models\Currency;
 use App\Models\Order;
@@ -62,6 +63,10 @@ class DepositResource extends ModelResource
             $transaction->status = 5;
             if ($type != 'crypto_fiat') {
                 (new Add())->run($order->currency_to, $amount, $user);
+                $limit = (new p2pController())->checkLimits($user->id);
+//                if($limit && $limit['limit'] > $amount){
+//
+//                }
                 $user->limit_deals += 3;
                 $transaction->balance_already_added = 1;
 

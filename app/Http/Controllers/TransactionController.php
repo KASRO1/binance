@@ -30,6 +30,11 @@ class TransactionController extends Controller
         $cur_from = Currency::query()->where('id', $order->currency_from)->first();
         $cur_to = Currency::query()->where('id', $order->currency_to)->first();
         $balance = Balance::query()->where('user_id', $user->id)->where('currency', $order->currency_from)->first();
+        if($amount == 0)
+        {
+            return response()->json(['error' => 'Amount must be greater than 0'], 400);
+        }
+
         if ($cur_from->type == 'fiat' && $cur_to->type == 'fiat') {
             $status = '2';
             $type = 'fiat';
@@ -41,7 +46,7 @@ class TransactionController extends Controller
                 return response()->json(['error' => 'Not enough money'], 400);
             }
             if ($user->limit_deals <= 0) {
-                return response()->json(['error' => 'Limit deals'], 400);
+                return response()->json(['error' => 'Please check limit'], 400);
             }
         }
         elseif($cur_from->type == 'crypto' && $cur_to->type == 'fiat')
@@ -114,6 +119,8 @@ class TransactionController extends Controller
                     'currency' => $cur_to->symbol,
                     'amount' => $amount
                 ]);
+                $transaction->balance_already_added = 1;
+                $transaction->save();
             }
 
             $user->open_deal = 0;

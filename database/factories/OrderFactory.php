@@ -25,7 +25,7 @@ class OrderFactory extends Factory
             'completion' => $this->faker->numberBetween(1, 1000),
             'available' => $this->faker->numberBetween(1, 1000),
             'feedback' => $this->faker->numberBetween(1, 1000),
-            'minimal_payment' => $this->faker->numberBetween(1, 1000),
+            'minimal_payment' => $this->faker->numberBetween(1, 4),
             'qr_code' => 'hQJ8o8FweRXrkCcbPVycFhCzkIhmg0vGd1dfEZB8.png',
             'сredentials' => $this->faker->creditCardNumber(),
             'currency_from' => $currency->id,

@@ -1,7 +1,32 @@
 @extends('base')
 
 @section('title', 'Главная страница')
+@php
 
+    function formatNumber($num) {
+        $isNegative = $num < 0; // Проверяем, отрицательное ли число
+        $numStr = number_format(abs($num), 20, '.', ''); // Преобразуем число в строку с 20 знаками после запятой
+
+        list($integer, $fraction) = explode('.', $numStr); // Разделяем число на целую и дробную части
+
+        if ($integer !== '0') { // У числа есть ненулевая целая часть
+            if ($fraction) {
+                // Обрезаем дробную часть до первых двух цифр
+                return ($isNegative ? '-' : '') . $integer . '.' . substr($fraction, 0, 2);
+            }
+            return ($isNegative ? '-' : '') . $integer;
+        } else {
+            // Целая часть равна 0, работаем с дробной частью
+            if ($fraction) {
+                $nonzeroIndex = strcspn($fraction, '123456789'); // Находим первый значащий символ
+                // Берем две значимые цифры после всех нулей
+                $significantDigits = substr($fraction, $nonzeroIndex, 2);
+                return ($isNegative ? '-' : '') . '0.' . str_repeat('0', $nonzeroIndex) . $significantDigits;
+            }
+            return ($isNegative ? '-' : '') . '0';
+        }
+    }
+@endphp
 @section('content')
     <div class="flex pt-5 flex-col gap-6">
         <div class="flex pt-5 flex-col gap-10">
@@ -65,7 +90,7 @@
                             {{$transfer['username']}}
                         </div>
                         <p class="text-green">
-                            + {{number_format($transfer['amount'], 4, '.', '') . ' ' . $transfer['currency']}}
+                            + {{formatNumber($transfer['amount']) . ' ' . $transfer['currency']}}
                         </p>
                     </div>
                 @endforeach

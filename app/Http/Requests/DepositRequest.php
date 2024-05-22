@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class DepositRequest extends FormRequest
 {
@@ -25,5 +27,14 @@ class DepositRequest extends FormRequest
             'amount' => ['required'],
             'document' => ['image', 'required'],
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors();  // Получаем объект ошибок
+
+        throw new HttpResponseException(response()->json([
+            'error' => $errors->first()
+        ], 422));
     }
 }

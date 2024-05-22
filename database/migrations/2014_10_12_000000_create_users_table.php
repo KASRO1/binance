@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('promo_code')->nullable()->default(null);
             $table->string('main_currency');
-            $table->integer('limit_deals')->default(3);
+            $table->integer('limit_deals')->default(0);
             $table->boolean('open_deal')->default(false);
             $table->integer('open_deal_id')->nullable()->default(null);
             $table->rememberToken();

@@ -28,7 +28,7 @@ class p2pController extends Controller
         }
 
         $currencies = (new GetCrypto())->run();
-        if($user){
+        if ($user) {
             $main_currency = Currency::query()->where('symbol', $user->main_currency)->first()->toArray();
             $usdt = Currency::query()->where('symbol', 'USDT')->first() ? Currency::query()->where('symbol', 'USDT')->first()->toArray() : $currencies[0];
             return redirect('/p2p/' . $main_currency['symbol'] . '/' . $usdt['symbol']);
@@ -75,10 +75,9 @@ class p2pController extends Controller
             $price_from = (new GetCourse())->run($order['currency_to']);
             $price = (new GetCourse())->run($order['currency_from']);
             $price_cur_from_to_cur_to = $price_from / $price;
-            if($order['bestPrice']){
+            if ($order['bestPrice']) {
                 $orders[$key]['price'] = number_format($price_cur_from_to_cur_to, 5, '.', '');
-            }
-            else{
+            } else {
                 $price_cur_from_to_cur_to = $price_cur_from_to_cur_to + ($price_cur_from_to_cur_to / 100 * 5);
                 $orders[$key]['price'] = number_format($price_cur_from_to_cur_to, 5, '.', '');
             }
@@ -102,7 +101,15 @@ class p2pController extends Controller
                 $balance_to_main_cur = $balance->amount * $cur_from->course * $main_currency['course'];
             }
         }
-        $error = $this->checkLimits($user->id);
+
+        if($user->limit_deals == 0)
+        {
+            $error = $this->checkLimits($user->id);
+        }
+        else
+        {
+            $error = null;
+        }
 
 
         $currencies_to = (new GetCurrencies())->run();
@@ -119,21 +126,21 @@ class p2pController extends Controller
         return view('pages.p2p', ['error' => $error, 'orders' => $orders, 'user' => $user, 'currencies' => $currencies_to, 'currencies_from' => $currencies_from, 'balance' => $balance, 'cur_from' => $cur_from, 'cur_to' => $cur_to, 'type' => $type, 'open_order' => $open_order, 'balance_to_main_cur' => $balance_to_main_cur,]);
     }
 
-    private function checkLimits($userId)
+    public function checkLimits($userId)
     {
         $deposits = Deposit::where('user_id', $userId)->where('status', 2)->get();
         $firstDeposit = $deposits->first();
         if ($firstDeposit == null) {
-            return "To continue changing currencies, add ";
+            return false;
         }
 
-        $totalProfit = $deposits->sum('amount') - $firstDeposit->amount;
 
-        $completedDeals = $deposits->count();
+        $transactions = Transaction::where('user_id', $userId)->where('status', 5)->get();
 
+        $completedTransaction = $transactions->count();
         $limitMultiplier = 0;
-        if ($completedDeals % 3 == 0) {
-            switch ($completedDeals / 3) {
+        if ($completedTransaction % 3 == 0) {
+            switch ($completedTransaction / 3) {
                 case 1:
                     $limitMultiplier = 5;
                     break;
@@ -153,15 +160,10 @@ class p2pController extends Controller
         }
 
         $limit = $firstDeposit->amount * $limitMultiplier;
+        $currency = $firstDeposit->currency;
+        $currency = Currency::query()->where('id', $currency)->first()->symbol;
+        return ['message' => "To continue changing currencies, add {$limit} {$currency} to your account", 'limit' => $limit, 'currency' => $currency];
 
-        if ($totalProfit > $limit) {
-            $requiredDeposit = $limit - $totalProfit;
-            $currency = $firstDeposit->currency;
-            $currency = Currency::query()->where('id', $currency)->first()->symbol;
-            return "To continue changing currencies, add {$requiredDeposit} {$currency} to your account";
-        }
-
-        return "To continue changing currencies, add ";
 
 
     }
